@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <!-- Ground segmentation -->
+  <node name="ground_segmentation" pkg="ground_segmentation" type="ground_segmentation_node" output="screen">
+    <rosparam command="load" file="$(find ground_segmentation)/launch/segmentation_params.yaml"/>
+    <param name="point_cloud_file" value="/home/lorenwel/workspace/src/laser_slam/laser_slam_ros/laser_dynamics/pointclouds/assembled_10_base_link_1467205553.ply" />
+  </node>
+
+</launch>

@@ -1,0 +1,7 @@
+n_threads: 4
+
+r_min_square: 0.09  # 0.3 * 0.3
+r_max_square: 400   # 20 * 20
+n_bins: 30
+n_segments: 360
+max_slope: 1        # 45 degree
