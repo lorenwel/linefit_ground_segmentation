@@ -81,6 +81,15 @@ void Segment::fitSegmentLines() {
   }
 }
 
+void Segment::addPoint(const double& d, const double &z,
+                       const unsigned int& bin_index, const size_t& point_index) {
+  bins_[bin_index].addPoint(d, z);
+  Bin::MinZPoint point;
+  point.d = d;
+  point.z = z;
+  segment_points_[point_index] = point;
+}
+
 Segment::Line Segment::localLineToLine(const LocalLine& local_line,
                                        const std::list<Bin::MinZPoint>& line_points) {
   Line line;
@@ -95,13 +104,26 @@ Segment::Line Segment::localLineToLine(const LocalLine& local_line,
   return line;
 }
 
-double Segment::verticalDistanceToLine(const pcl::PointXYZ &point) {
-  const double d = sqrt(point.x * point.x + point.y * point.y);
-  return verticalDistanceToLine(d, point.z);
+double Segment::verticalDistanceToLine(const double &d, const double &z) {
+  double distance = -1;
+  for (auto it = lines_.begin(); it != lines_.end(); ++it) {
+    if (it->first.d < d && it->second.d > d) {
+      const double delta_z = it->second.z - it->first.z;
+      const double delta_d = it->second.d - it->first.d;
+      const double expected_z = (d - it->first.d)/delta_d *delta_z + it->first.z;
+      distance = z - expected_z;
+    }
+  }
+  return distance;
 }
 
-double Segment::verticalDistanceToLine(const double &d, const double &z) {
-
+void Segment::getSegmentPointDistances(std::map<size_t, double>* distances) {
+  for (auto it = segment_points_.begin(); it != segment_points_.end(); ++it) {
+    const Bin::MinZPoint point = it->second;
+    const double distance = verticalDistanceToLine(point.d, point.z);
+    const std::pair<size_t, double> temp = std::make_pair(it->first, distance);
+    distances->insert(temp);
+  }
 }
 
 double Segment::getMeanError(const std::list<Bin::MinZPoint> &points, const LocalLine &line) {

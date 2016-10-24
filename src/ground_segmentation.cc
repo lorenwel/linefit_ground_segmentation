@@ -11,7 +11,7 @@
 
 void GroundSegmentation::visualizePointCloud(const PointCloud::ConstPtr& cloud,
                                              const std::string& id) {
-  viewer_->addPointCloud(cloud,"point_cloud",0);
+  viewer_->addPointCloud(cloud, id, 0);
 }
 
 void GroundSegmentation::visualizeLines(const std::list<PointLine>& lines) {
@@ -47,6 +47,8 @@ GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
 
 void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segmentation) {
   std::cout << "Got point cloud with " << cloud.size() << " points\n";
+  segmentation->clear();
+  segmentation->resize(cloud.size(), 0);
 
   insertPoints(cloud);
   if (params_.visualize) {
@@ -61,6 +63,7 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
   else {
     getLines(NULL);
   }
+  assignCluster(segmentation);
 }
 
 void GroundSegmentation::getLines(std::list<PointLine> *lines) {
@@ -125,6 +128,34 @@ pcl::PointXYZ GroundSegmentation::minZPointTo3d(const Bin::MinZPoint &min_z_poin
   return point;
 }
 
+void GroundSegmentation::assignCluster(std::vector<int>* segmentation) {
+  std::vector<std::thread> thread_vec(params_.n_threads);
+  unsigned int i;
+  for (i = 0; i < params_.n_threads; ++i) {
+    const unsigned int start_index = params_.n_segments / params_.n_threads * i;
+    const unsigned int end_index = params_.n_segments / params_.n_threads * (i+1);
+    thread_vec[i] = std::thread(&GroundSegmentation::assignClusterThread, this,
+                                start_index, end_index, segmentation);
+  }
+  for (auto it = thread_vec.begin(); it != thread_vec.end(); ++it) {
+    it->join();
+  }
+}
+
+void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
+                                             const unsigned int &end_index,
+                                             std::vector<int> *segmentation) {
+  for (unsigned int i = start_index; i < end_index; ++i) {
+    std::map<size_t, double> distances;
+    segments_[i].getSegmentPointDistances(&distances);
+    for (auto dist_iter = distances.begin(); dist_iter != distances.end(); ++dist_iter) {
+      if (std::fabs(dist_iter->second) < params_.max_dist_to_line) {
+        segmentation->at(dist_iter->first) = 1;
+      }
+    }
+  }
+}
+
 void GroundSegmentation::getMinZPoints(PointCloud* out_cloud) {
   const double seg_step = 2*M_PI / params_.n_segments;
   const double bin_step = (sqrt(params_.r_max_square) - sqrt(params_.r_min_square))
@@ -181,11 +212,12 @@ void GroundSegmentation::insertionThread(const PointCloud& cloud,
   for (unsigned int i = start_index; i < end_index; ++i) {
     pcl::PointXYZ point(cloud[i]);
     const double range_square = point.x * point.x + point.y * point.y;
+    const double range = sqrt(range_square);
     if (range_square < params_.r_max_square && range_square > params_.r_min_square) {
       const double angle = std::atan2(point.y, point.x);
-      const unsigned int bin_index = (sqrt(range_square) - r_min) / bin_step;
+      const unsigned int bin_index = (range - r_min) / bin_step;
       const unsigned int segment_index = (angle + M_PI) / segment_step;
-      segments_[segment_index][bin_index].addPoint(point);
+      segments_[segment_index].addPoint(range, point.z, bin_index, i);
     }
   }
 }

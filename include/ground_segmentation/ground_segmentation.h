@@ -65,6 +65,12 @@ class GroundSegmentation {
   // Visualizer.
   std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
 
+  void assignCluster(std::vector<int>* segmentation);
+
+  void assignClusterThread(const unsigned int& start_index,
+                           const unsigned int& end_index,
+                           std::vector<int>* segmentation);
+
   void insertPoints(const PointCloud& cloud);
 
   void insertionThread(const PointCloud& cloud,

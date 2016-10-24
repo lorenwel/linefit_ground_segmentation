@@ -34,6 +34,8 @@ private:
 
   Line localLineToLine(const LocalLine& local_line, const std::list<Bin::MinZPoint>& line_points);
 
+  double verticalDistanceToLine(const double& d, const double &z);
+
 public:
 
   Segment(const unsigned int& n_bins,
@@ -45,9 +47,10 @@ public:
 
   void fitSegmentLines();
 
-  double verticalDistanceToLine(const pcl::PointXYZ& point);
+  void addPoint(const double& d, const double &z,
+                const unsigned int& bin_index, const size_t& point_index);
 
-  double verticalDistanceToLine(const double& d, const double &z);
+  void getSegmentPointDistances(std::map<size_t, double>* distances);
 
   inline Bin& operator[](const size_t& index) {
     return bins_[index];
