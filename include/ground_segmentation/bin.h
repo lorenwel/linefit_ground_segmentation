@@ -10,6 +10,7 @@ class Bin {
 public:
   struct MinZPoint {
     MinZPoint() : z(0), d(0) {}
+    bool operator==(const MinZPoint& comp) {return z == comp.z && d == comp.d;}
 
     double z;
     double d;
@@ -29,6 +30,8 @@ public:
   Bin(const Bin& segment);
 
   void addPoint(const pcl::PointXYZ& point);
+
+  void addPoint(const double& d, const double& z);
 
   MinZPoint getMinZPoint();
 
