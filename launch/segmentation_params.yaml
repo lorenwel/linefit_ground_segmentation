@@ -1,7 +1,16 @@
 n_threads: 4
 
-r_min_square: 0.09  # 0.3 * 0.3
-r_max_square: 400   # 20 * 20
-n_bins: 30
+visualize: true
+
+r_min: 0.5
+r_max: 20
+n_bins: 120
 n_segments: 360
-max_slope: 1        # 45 degree
+
+max_dist_to_line: 0.1
+
+max_slope: 1.1        # 45 degree plus wiggle room
+max_fit_error: 0.1
+long_threshold: 3.0
+max_long_height: 0.1
+max_start_height: 0.2
