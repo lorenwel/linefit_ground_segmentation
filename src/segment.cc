@@ -54,7 +54,8 @@ void Segment::fitSegmentLines() {
           }
           // Start new line.
           is_long_line = false;
-          current_line_points.clear();
+//          current_line_points.clear();
+          current_line_points.erase(current_line_points.begin(), --current_line_points.end());
           current_line_points.push_back(cur_point);
         }
         // Good line, continue.
