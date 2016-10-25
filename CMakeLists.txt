@@ -15,7 +15,9 @@ add_definitions(${PCL_DEFINITIONS})
 cs_add_library(${PROJECT_NAME} src/ground_segmentation.cc src/segment.cc src/bin.cc)
 
 add_executable(ground_segmentation_node src/ground_segmentation_node.cc)
+add_executable(ground_segmentation_test_node src/ground_segmentation_test_node.cc)
 target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES} ${PROJECT_NAME} ${PCL_LIBRARIES})
+target_link_libraries(ground_segmentation_test_node ${catkin_LIBRARIES} ${PROJECT_NAME} ${PCL_LIBRARIES})
 
 #add_doxygen(NOT_AUTOMATIC)
 
