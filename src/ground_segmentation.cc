@@ -28,6 +28,7 @@ void GroundSegmentation::visualize(const std::list<PointLine>& lines,
   viewer_->setBackgroundColor (0, 0, 0);
   viewer_->addCoordinateSystem (1.0);
   viewer_->initCameraParameters ();
+  viewer_->setCameraPosition(-2.0, 0, 2.0, 1.0, 0, 0);
   visualizePointCloud(min_cloud, "min_cloud");
   viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
                                              0.0f, 1.0f, 0.0f,

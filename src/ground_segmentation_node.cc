@@ -25,6 +25,8 @@ public:
 
     segmenter.segment(cloud, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
+    ground_cloud.header = cloud.header;
+    obstacle_cloud.header = cloud.header;
     for (size_t i = 0; i < cloud.size(); ++i) {
       if (labels[i] == 1) ground_cloud.push_back(cloud[i]);
       else obstacle_cloud.push_back(cloud[i]);
@@ -75,6 +77,6 @@ int main(int argc, char** argv) {
   // Start node.
   SegmentationNode node(nh, ground_topic, obstacle_topic, params, latch);
   ros::Subscriber cloud_sub;
-  cloud_sub = nh.subscribe("input_cloud", 1, &SegmentationNode::scanCallback, &node);
+  cloud_sub = nh.subscribe(input_topic, 1, &SegmentationNode::scanCallback, &node);
   ros::spin();
 }
