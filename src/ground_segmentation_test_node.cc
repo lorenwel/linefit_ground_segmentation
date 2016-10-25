@@ -40,13 +40,10 @@ int main(int argc, char** argv) {
       params.max_error_square = max_fit_error * max_fit_error;
     }
 
-    ros::WallTime start = ros::WallTime::now();
     GroundSegmentation segmenter(params);
     std::vector<int> labels;
 
     segmenter.segment(cloud, &labels);
-    const double run_time = (ros::WallTime::now() - start).toSec();
-    std::cout << "Ground segmentation took " << run_time/1000 << "ms";
   }
   else {
     std::cerr << "No point cloud file given\n";
