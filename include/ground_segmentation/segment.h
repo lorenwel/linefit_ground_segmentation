@@ -24,8 +24,6 @@ private:
 
   std::list<Line> lines_;
 
-  std::map<size_t, Bin::MinZPoint> segment_points_;
-
   LocalLine fitLocalLine(const std::list<Bin::MinZPoint>& points);
 
   double getMeanError(const std::list<Bin::MinZPoint>& points, const LocalLine& line);
@@ -34,7 +32,6 @@ private:
 
   Line localLineToLine(const LocalLine& local_line, const std::list<Bin::MinZPoint>& line_points);
 
-  double verticalDistanceToLine(const double& d, const double &z);
 
 public:
 
@@ -45,12 +42,9 @@ public:
           const double& max_long_height,
           const double& max_start_height);
 
+  double verticalDistanceToLine(const double& d, const double &z);
+
   void fitSegmentLines();
-
-  void addPoint(const double& d, const double &z,
-                const unsigned int& bin_index, const size_t& point_index);
-
-  void getSegmentPointDistances(std::map<size_t, double>* distances);
 
   inline Bin& operator[](const size_t& index) {
     return bins_[index];

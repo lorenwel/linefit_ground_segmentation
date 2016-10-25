@@ -62,6 +62,12 @@ class GroundSegmentation {
   // Access with segments_[segment][bin].
   std::vector<Segment> segments_;
 
+  // Bin index of every point.
+  std::vector<std::pair<int, int> > bin_index_;
+
+  // 2D coordinates (d, z) of every point in its respective segment.
+  std::vector<Bin::MinZPoint> segment_coordinates_;
+
   // Visualizer.
   std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
 

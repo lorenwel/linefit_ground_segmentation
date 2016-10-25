@@ -81,15 +81,6 @@ void Segment::fitSegmentLines() {
   }
 }
 
-void Segment::addPoint(const double& d, const double &z,
-                       const unsigned int& bin_index, const size_t& point_index) {
-  bins_[bin_index].addPoint(d, z);
-  Bin::MinZPoint point;
-  point.d = d;
-  point.z = z;
-  segment_points_[point_index] = point;
-}
-
 Segment::Line Segment::localLineToLine(const LocalLine& local_line,
                                        const std::list<Bin::MinZPoint>& line_points) {
   Line line;
@@ -116,15 +107,6 @@ double Segment::verticalDistanceToLine(const double &d, const double &z) {
     }
   }
   return distance;
-}
-
-void Segment::getSegmentPointDistances(std::map<size_t, double>* distances) {
-  for (auto it = segment_points_.begin(); it != segment_points_.end(); ++it) {
-    const Bin::MinZPoint point = it->second;
-    const double distance = verticalDistanceToLine(point.d, point.z);
-    const std::pair<size_t, double> temp = std::make_pair(it->first, distance);
-    distances->insert(temp);
-  }
 }
 
 double Segment::getMeanError(const std::list<Bin::MinZPoint> &points, const LocalLine &line) {

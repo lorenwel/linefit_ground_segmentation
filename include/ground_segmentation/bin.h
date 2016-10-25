@@ -10,6 +10,7 @@ class Bin {
 public:
   struct MinZPoint {
     MinZPoint() : z(0), d(0) {}
+    MinZPoint(const double& d, const double& z) : z(z), d(d) {}
     bool operator==(const MinZPoint& comp) {return z == comp.z && d == comp.d;}
 
     double z;
