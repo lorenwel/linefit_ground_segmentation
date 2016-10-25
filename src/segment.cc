@@ -105,9 +105,10 @@ Segment::Line Segment::localLineToLine(const LocalLine& local_line,
 }
 
 double Segment::verticalDistanceToLine(const double &d, const double &z) {
+  static const double kMargin = 0.1;
   double distance = -1;
   for (auto it = lines_.begin(); it != lines_.end(); ++it) {
-    if (it->first.d < d && it->second.d > d) {
+    if (it->first.d - kMargin < d && it->second.d + kMargin > d) {
       const double delta_z = it->second.z - it->first.z;
       const double delta_d = it->second.d - it->first.d;
       const double expected_z = (d - it->first.d)/delta_d *delta_z + it->first.z;

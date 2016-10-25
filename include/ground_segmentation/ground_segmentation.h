@@ -93,7 +93,7 @@ class GroundSegmentation {
 
   void visualizeLines(const std::list<PointLine>& lines);
 
-  void visualize(const std::list<PointLine>& lines, const PointCloud::ConstPtr& cloud);
+  void visualize(const std::list<PointLine>& lines, const PointCloud::ConstPtr& cloud, const PointCloud::ConstPtr& ground_cloud, const PointCloud::ConstPtr& obstacle_cloud);
 
 public:
 

@@ -22,11 +22,21 @@ void GroundSegmentation::visualizeLines(const std::list<PointLine>& lines) {
 }
 
 void GroundSegmentation::visualize(const std::list<PointLine>& lines,
-                                   const PointCloud::ConstPtr& cloud) {
+                                   const PointCloud::ConstPtr& min_cloud,
+                                   const PointCloud::ConstPtr& ground_cloud,
+                                   const PointCloud::ConstPtr& obstacle_cloud) {
   viewer_->setBackgroundColor (0, 0, 0);
   viewer_->addCoordinateSystem (1.0);
   viewer_->initCameraParameters ();
-  visualizePointCloud(cloud);
+  visualizePointCloud(min_cloud, "min_cloud");
+  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
+                                             0.0f, 1.0f, 0.0f,
+                                             "min_cloud");
+  visualizePointCloud(ground_cloud, "ground_cloud");
+  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
+                                                1.0f, 0.0f, 0.0f,
+                                                "ground_cloud");
+  visualizePointCloud(obstacle_cloud, "obstacle_cloud");
   visualizeLines(lines);
   while (!viewer_->wasStopped ()){
       viewer_->spinOnce (100);
@@ -51,19 +61,28 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
   segmentation->resize(cloud.size(), 0);
 
   insertPoints(cloud);
+  std::list<PointLine> lines;
   if (params_.visualize) {
-    std::list<PointLine> lines;
     getLines(&lines);
-
-    // Visualize.
-    PointCloud::Ptr min_cloud(new PointCloud());
-    getMinZPointCloud(min_cloud.get());
-    visualize(lines, min_cloud);
   }
   else {
     getLines(NULL);
   }
   assignCluster(segmentation);
+
+  if (params_.visualize) {
+    // Visualize.
+    PointCloud::Ptr obstacle_cloud(new PointCloud());
+    // Get cloud of ground points.
+    PointCloud::Ptr ground_cloud(new PointCloud());
+    for (size_t i = 0; i < cloud.size(); ++i) {
+      if (segmentation->at(i) == 1) ground_cloud->push_back(cloud[i]);
+      else obstacle_cloud->push_back(cloud[i]);
+    }
+    PointCloud::Ptr min_cloud(new PointCloud());
+    getMinZPointCloud(min_cloud.get());
+    visualize(lines, min_cloud, ground_cloud, obstacle_cloud);
+  }
 }
 
 void GroundSegmentation::getLines(std::list<PointLine> *lines) {
