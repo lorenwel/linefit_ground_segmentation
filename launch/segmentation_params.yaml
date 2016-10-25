@@ -1,7 +1,5 @@
 n_threads: 4
 
-visualize: true
-
 r_min: 0.5
 r_max: 20
 n_bins: 120
@@ -11,6 +9,6 @@ max_dist_to_line: 0.1
 
 max_slope: 1.1        # 45 degree plus wiggle room
 max_fit_error: 0.1
-long_threshold: 3.0
+long_threshold: 1.0
 max_long_height: 0.1
 max_start_height: 0.2

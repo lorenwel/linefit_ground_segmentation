@@ -9,6 +9,7 @@
     <param name="ground_output_topic" value="ground_cloud" />
     <param name="obstacle_output_topic" value="obstacle_cloud" />
     <param name="latch" value="true" />
+    <param name="visualize" value="false" />
   </node>
 
 </launch>
