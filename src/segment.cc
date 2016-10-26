@@ -42,8 +42,7 @@ void Segment::fitSegmentLines() {
         // Check if not a good line.
         if (error > max_error_ ||
             std::fabs(cur_line.first) > max_slope_ ||
-            is_long_line && std::fabs(expected_z - cur_point.z) > max_long_height_ ||
-            std::fabs(current_line_points.front().z - cur_ground_height) > max_start_height_) {
+            is_long_line && std::fabs(expected_z - cur_point.z) > max_long_height_) {
           // Add line until previous point as ground.
           current_line_points.pop_back();
           // Don't let lines with 2 base points through.
@@ -54,7 +53,6 @@ void Segment::fitSegmentLines() {
           }
           // Start new line.
           is_long_line = false;
-//          current_line_points.clear();
           current_line_points.erase(current_line_points.begin(), --current_line_points.end());
           current_line_points.push_back(cur_point);
         }
@@ -63,8 +61,9 @@ void Segment::fitSegmentLines() {
       }
       else {
         // Not enough points.
-        if (cur_point.d - current_line_points.back().d < long_threshold_) {
-          // Add new ponit if it is not far.
+        if (cur_point.d - current_line_points.back().d < long_threshold_ ||
+            std::fabs(current_line_points.back().z - cur_ground_height) < max_start_height_) {
+          // Add point if valid.
           current_line_points.push_back(cur_point);
         }
         else {
