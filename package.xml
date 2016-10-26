@@ -14,6 +14,7 @@
   <depend>doxygen_catkin</depend>
   <depend>eigen_catkin</depend>
   <depend>glog_catkin</depend>
+  <depend>gflags_catkin</depend>
   <depend>message_generation</depend>
   <depend>message_runtime</depend>
   <depend>rosbag</depend>
