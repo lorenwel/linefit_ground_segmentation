@@ -54,14 +54,14 @@ void Segment::fitSegmentLines() {
           // Start new line.
           is_long_line = false;
           current_line_points.erase(current_line_points.begin(), --current_line_points.end());
-          current_line_points.push_back(cur_point);
+          --line_iter;
         }
         // Good line, continue.
         else { }
       }
       else {
         // Not enough points.
-        if (cur_point.d - current_line_points.back().d < long_threshold_ ||
+        if (cur_point.d - current_line_points.back().d < long_threshold_ &&
             std::fabs(current_line_points.back().z - cur_ground_height) < max_start_height_) {
           // Add point if valid.
           current_line_points.push_back(cur_point);
