@@ -52,7 +52,8 @@ GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
                                          params.max_error_square,
                                          params.long_threshold,
                                          params.max_long_height,
-                                         params.max_start_height)) {
+                                         params.max_start_height,
+                                         params.sensor_height)) {
   if (params.visualize) viewer_ = std::make_shared<pcl::visualization::PCLVisualizer>("3D Viewer");
 }
 
@@ -171,12 +172,35 @@ void GroundSegmentation::assignCluster(std::vector<int>* segmentation) {
 void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
                                              const unsigned int &end_index,
                                              std::vector<int> *segmentation) {
+  const double segment_step = 2*M_PI/params_.n_segments;
   for (unsigned int i = start_index; i < end_index; ++i) {
     Bin::MinZPoint point_2d = segment_coordinates_[i];
     const int segment_index = bin_index_[i].first;
-    if (segment_index > 0) {
-      const double dist = segments_[segment_index].verticalDistanceToLine(point_2d.d, point_2d.z);
-      if (std::fabs(dist) < params_.max_dist_to_line) segmentation->at(i) = 1;
+    if (segment_index >= 0) {
+      double dist = segments_[segment_index].verticalDistanceToLine(point_2d.d, point_2d.z);
+      // Search neighboring segments.
+      int steps = 1;
+      while (dist == -1 && steps * segment_step < params_.line_search_angle) {
+        // Fix indices that are out of bounds.
+        int index_1 = segment_index + steps;
+        while (index_1 >= params_.n_segments) index_1 -= params_.n_segments;
+        int index_2 = segment_index - steps;
+        while (index_2 < 0) index_2 += params_.n_segments;
+        // Get distance to neighboring lines.
+        const double dist_1 = segments_[index_1].verticalDistanceToLine(point_2d.d, point_2d.z);
+        const double dist_2 = segments_[index_2].verticalDistanceToLine(point_2d.d, point_2d.z);
+        // Select larger distance if both segments return a valid distance.
+        if (dist_1 > dist) {
+          dist = dist_1;
+        }
+        if (dist_2 > dist) {
+          dist = dist_2;
+        }
+        ++steps;
+      }
+      if (dist < params_.max_dist_to_line && dist != -1) {
+        segmentation->at(i) = 1;
+      }
     }
   }
 }

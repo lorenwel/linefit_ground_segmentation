@@ -23,7 +23,9 @@ struct GroundSegmentationParams {
       max_error_square(0.01),
       long_threshold(2.0),
       max_long_height(0.1),
-      max_start_height(0.2){}
+      max_start_height(0.2),
+      sensor_height(0.2),
+      line_search_angle(0.2) {}
 
   // Visualize estimated ground.
   bool visualize;
@@ -47,6 +49,10 @@ struct GroundSegmentationParams {
   double max_long_height;
   // Maximum heigh of starting line to be labelled ground.
   double max_start_height;
+  // Height of sensor above ground.
+  double sensor_height;
+  // How far to search for a line in angular direction [rad].
+  double line_search_angle;
   // Number of threads.
   int n_threads;
 };

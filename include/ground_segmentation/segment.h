@@ -19,6 +19,7 @@ private:
   const double long_threshold_;
   const double max_long_height_;
   const double max_start_height_;
+  const double sensor_height_;
 
   std::vector<Bin> bins_;
 
@@ -40,7 +41,8 @@ public:
           const double& max_error,
           const double& long_threshold,
           const double& max_long_height,
-          const double& max_start_height);
+          const double& max_start_height,
+          const double& sensor_height);
 
   double verticalDistanceToLine(const double& d, const double &z);
 

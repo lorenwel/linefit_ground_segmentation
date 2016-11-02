@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
     nh.param("long_threshold", params.long_threshold, params.long_threshold);
     nh.param("max_long_height", params.max_long_height, params.max_long_height);
     nh.param("max_start_height", params.max_start_height, params.max_start_height);
+    nh.param("sensor_height", params.sensor_height, params.sensor_height);
+    nh.param("line_search_angle", params.line_search_angle, params.line_search_angle);
     nh.param("n_threads", params.n_threads, params.n_threads);
     // Params that need to be squared.
     double r_min, r_max, max_fit_error;

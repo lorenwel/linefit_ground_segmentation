@@ -5,13 +5,15 @@ Segment::Segment(const unsigned int& n_bins,
                  const double& max_error,
                  const double& long_threshold,
                  const double& max_long_height,
-                 const double& max_start_height) :
+                 const double& max_start_height,
+                 const double& sensor_height) :
                  bins_(n_bins),
                  max_slope_(max_slope),
                  max_error_(max_error),
                  long_threshold_(long_threshold),
                  max_long_height_(max_long_height),
-                 max_start_height_(max_start_height) {}
+                 max_start_height_(max_start_height),
+                 sensor_height_(sensor_height){}
 
 void Segment::fitSegmentLines() {
   // Find first point.
@@ -23,7 +25,7 @@ void Segment::fitSegmentLines() {
   }
   // Fill lines.
   bool is_long_line = false;
-  double cur_ground_height = 0;
+  double cur_ground_height = -sensor_height_;
   std::list<Bin::MinZPoint> current_line_points(1, line_start->getMinZPoint());
   LocalLine cur_line = std::make_pair(0,0);
   for (auto line_iter = line_start+1; line_iter != bins_.end(); ++line_iter) {
@@ -103,7 +105,7 @@ double Segment::verticalDistanceToLine(const double &d, const double &z) {
       const double delta_z = it->second.z - it->first.z;
       const double delta_d = it->second.d - it->first.d;
       const double expected_z = (d - it->first.d)/delta_d *delta_z + it->first.z;
-      distance = z - expected_z;
+      distance = std::fabs(z - expected_z);
     }
   }
   return distance;
