@@ -3,7 +3,7 @@
 <launch>
 
   <!-- Ground segmentation -->
-  <node name="ground_segmentation" pkg="ground_segmentation" type="ground_segmentation_node" output="screen">
+  <node name="ground_segmentation" pkg="ground_segmentation" type="ground_segmentation_node">
     <rosparam command="load" file="$(find ground_segmentation)/launch/segmentation_params.yaml"/>
     <param name="input_topic" value="/dynamic_point_cloud" />
     <param name="ground_output_topic" value="ground_cloud" />
