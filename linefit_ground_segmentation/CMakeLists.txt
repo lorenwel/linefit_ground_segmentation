@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ground_segmentation)
+project(linefit_ground_segmentation)
 
 find_package(catkin_simple 0.1.0 REQUIRED )
 
@@ -16,11 +16,6 @@ find_package(Eigen3 REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
 cs_add_library(${PROJECT_NAME} src/ground_segmentation.cc src/segment.cc src/bin.cc)
-
-add_executable(ground_segmentation_node src/ground_segmentation_node.cc)
-add_executable(ground_segmentation_test_node src/ground_segmentation_test_node.cc)
-target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES} ${PROJECT_NAME} ${PCL_LIBRARIES})
-target_link_libraries(ground_segmentation_test_node ${catkin_LIBRARIES} ${PROJECT_NAME} ${PCL_LIBRARIES})
 
 #add_doxygen(NOT_AUTOMATIC)
 

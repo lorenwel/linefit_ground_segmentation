@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>linefit_ground_segmentation_ros</name>
+  <version>0.0.1</version>
+  <description>linefit_ground_segmentation_ros</description>
+  
+  <maintainer email="lorenwel@ethz.ch">Lorenz Wellhausen</maintainer>
+  
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+  
+  <depend>glog_catkin</depend>
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  <depend>rosbag</depend>
+  <depend>roscpp</depend>  
+  <depend>tf</depend>
+
+  <depend>linefit_ground_segmentation</depend>
+  
+</package>
+
