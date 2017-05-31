@@ -39,8 +39,6 @@ public:
 int main(int argc, char** argv) {
   ros::init(argc, argv, "ground_segmentation");
   google::InitGoogleLogging(argv[0]);
-//  google::ParseCommandLineFlags(&argc, &argv, false);
-  google::InstallFailureSignalHandler();
 
   ros::NodeHandle nh("~");
 
