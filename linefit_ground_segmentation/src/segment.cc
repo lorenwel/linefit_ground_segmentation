@@ -141,8 +141,7 @@ Segment::LocalLine Segment::fitLocalLine(const std::list<Bin::MinZPoint> &points
     Y(counter) = iter->z;
     ++counter;
   }
-  const Eigen::MatrixXd X_t = X.transpose();
-  const Eigen::VectorXd result = (X_t * X).inverse() * X_t * Y;
+  Eigen::VectorXd result = X.colPivHouseholderQr().solve(Y);
   LocalLine line_result;
   line_result.first = result(0);
   line_result.second = result(1);
