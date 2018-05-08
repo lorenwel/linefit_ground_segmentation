@@ -1,4 +1,5 @@
 #include "ground_segmentation/segment.h"
+#include <chrono> 
 
 Segment::Segment(const unsigned int& n_bins,
                  const double& max_slope,
@@ -141,7 +142,29 @@ Segment::LocalLine Segment::fitLocalLine(const std::list<Bin::MinZPoint> &points
     Y(counter) = iter->z;
     ++counter;
   }
+
+  auto start_matrix = std::chrono::high_resolution_clock::now();
+  const Eigen::MatrixXd X_t = X.transpose(); 
+  const Eigen::VectorXd result2 = (X_t * X).inverse() * X_t * Y;
+  auto finish_matrix = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed_matrix = finish_matrix - start_matrix;
+  
+
+  auto start_qrpiv = std::chrono::high_resolution_clock::now();
   Eigen::VectorXd result = X.colPivHouseholderQr().solve(Y);
+  auto finish_qrpiv = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed_qrpiv = finish_qrpiv - start_qrpiv;
+  
+  // if(elapsed_matrix > elapsed_qrpiv) {
+    // std::cout << "Linear system solving benchmark \n";
+    // std::cout << "  Matrix = " << elapsed_matrix.count() << " s\n";
+    // std::cout << "  QR col piv = " << elapsed_qrpiv.count() << " s\n";
+    // std::cout << "  X size: " << X.rows() << " x " << X.cols() << std::endl;
+    double ratio = elapsed_matrix.count() / elapsed_qrpiv.count();
+    std::cout << ratio << std::endl;
+  // }
+  
+
   LocalLine line_result;
   line_result.first = result(0);
   line_result.second = result(1);
