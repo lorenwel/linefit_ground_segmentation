@@ -265,8 +265,10 @@ void GroundSegmentation::insertionThread(const PointCloud& cloud,
       const double angle = std::atan2(point.y, point.x);
       const unsigned int bin_index = (range - r_min) / bin_step;
       const unsigned int segment_index = (angle + M_PI) / segment_step;
-      segments_[segment_index][bin_index].addPoint(range, point.z);
-      bin_index_[i] = std::make_pair(segment_index, bin_index);
+      if((segment_index < params_.n_segments) && (bin_index < params_.n_bins)) {
+        segments_[segment_index][bin_index].addPoint(range, point.z);
+        bin_index_[i] = std::make_pair(segment_index, bin_index);
+      }
     }
     else {
       bin_index_[i] = std::make_pair<int, int>(-1, -1);
