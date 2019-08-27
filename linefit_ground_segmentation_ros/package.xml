@@ -19,6 +19,9 @@
   <depend>rosbag</depend>
   <depend>roscpp</depend>  
   <depend>tf</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_eigen</depend>
+  <depend>utils</depend>
 
   <depend>linefit_ground_segmentation</depend>
   

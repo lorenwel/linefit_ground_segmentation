@@ -1,43 +1,99 @@
-#include <ros/ros.h>
 #include <pcl/io/ply_io.h>
 #include <pcl_ros/point_cloud.h>
+#include <ros/ros.h>
+#include <tf2_eigen/tf2_eigen.h>
+#include <tf2_ros/transform_listener.h>
 
 #include "ground_segmentation/ground_segmentation.h"
+#include "utils/params/params.h"
 
-class SegmentationNode {
+class SegmentationNode
+{
   ros::Publisher ground_pub_;
   ros::Publisher obstacle_pub_;
   GroundSegmentationParams params_;
 
-public:
-  SegmentationNode(ros::NodeHandle& nh,
-                   const std::string& ground_topic,
-                   const std::string& obstacle_topic,
-                   const GroundSegmentationParams& params,
-                   const bool& latch = false) : params_(params) {
+  tf2_ros::Buffer tf_buffer_;
+  tf2_ros::TransformListener tf_listener_;
+
+  params::VehicleParams vehicle_params_;
+
+ public:
+  SegmentationNode(ros::NodeHandle& nh, const std::string& ground_topic,
+                   const std::string& obstacle_topic, const GroundSegmentationParams& params,
+                   const bool& latch = false)
+    : params_(params), tf_buffer_(), tf_listener_(tf_buffer_)
+  {
+    params::loadVehicleParams(&nh, &vehicle_params_);
+
     ground_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(ground_topic, 1, latch);
     obstacle_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(obstacle_topic, 1, latch);
   }
 
-  void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud) {
+  void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud)
+  {
+    // Look up transform to vehicle_frame
+    Eigen::Isometry3f sens_to_veh = Eigen::Isometry3f::Identity();
+    try {
+      geometry_msgs::TransformStamped transform = tf_buffer_.lookupTransform(
+          "vehicle_frame", cloud.header.frame_id, ros::Time(1.0e-6 * cloud.header.stamp));
+      sens_to_veh = tf2::transformToEigen(transform).cast<float>();
+    } catch (tf2::TransformException& e) {
+      ROS_WARN("%s", e.what());
+      return;
+    }
+
     GroundSegmentation segmenter(params_);
     std::vector<int> labels;
 
-    segmenter.segment(cloud, &labels);
+    // Remove duplicates
+    size_t num_duplicates = 0;
+    std::set<std::tuple<float, float, float>> pnts_set;
+    pcl::PointCloud<pcl::PointXYZ> pruned_cloud;
+    for (const pcl::PointXYZ& p : cloud.points) {
+      // Remove points on the truck
+      Eigen::Vector3f p_veh(p.x, p.y, p.z);
+      p_veh = sens_to_veh * p_veh;
+
+      if (p_veh(0) >= -vehicle_params_.rear_axle_to_trailer_rear - 0.1 &&
+          p_veh(0) <= vehicle_params_.rear_axle_to_front_bumper + 01 &&
+          p_veh(1) >= -vehicle_params_.mirror_to_mirror / 2.0 - 0.1 &&
+          p_veh(1) <= vehicle_params_.mirror_to_mirror / 2.0 + 0.1) {
+        // On ego, ignore
+      } else {
+        auto tup = std::make_tuple(p.x, p.y, p.z);
+        if (pnts_set.count(tup) == 0) {
+          pnts_set.insert(tup);
+          pruned_cloud.points.push_back(p);
+        } else {
+          num_duplicates++;
+        }
+      }
+    }
+
+    pruned_cloud.header = cloud.header;
+    pruned_cloud.height = 1;
+    pruned_cloud.width = pruned_cloud.points.size();
+    ROS_INFO("Removed %lu duplicates out of %lu", num_duplicates, cloud.points.size());
+
+    segmenter.segment(pruned_cloud, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
-    ground_cloud.header = cloud.header;
-    obstacle_cloud.header = cloud.header;
-    for (size_t i = 0; i < cloud.size(); ++i) {
-      if (labels[i] == 1) ground_cloud.push_back(cloud[i]);
-      else obstacle_cloud.push_back(cloud[i]);
+    ground_cloud.header = pruned_cloud.header;
+    obstacle_cloud.header = pruned_cloud.header;
+    for (size_t i = 0; i < pruned_cloud.size(); ++i) {
+      if (labels[i] == 1)
+        ground_cloud.push_back(pruned_cloud[i]);
+      else
+        obstacle_cloud.push_back(pruned_cloud[i]);
     }
     ground_pub_.publish(ground_cloud);
     obstacle_pub_.publish(obstacle_cloud);
   }
 };
 
-int main(int argc, char** argv) {
-  ros::init(argc, argv, "ground_segmentation");  
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "ground_segmentation");
 
   ros::NodeHandle nh("~");
 
@@ -57,10 +113,10 @@ int main(int argc, char** argv) {
   // Params that need to be squared.
   double r_min, r_max, max_fit_error;
   if (nh.getParam("r_min", r_min)) {
-    params.r_min_square = r_min*r_min;
+    params.r_min_square = r_min * r_min;
   }
   if (nh.getParam("r_max", r_max)) {
-    params.r_max_square = r_max*r_max;
+    params.r_max_square = r_max * r_max;
   }
   if (nh.getParam("max_fit_error", max_fit_error)) {
     params.max_error_square = max_fit_error * max_fit_error;

@@ -41,7 +41,7 @@ void GroundSegmentation::visualize(const std::list<PointLine>& lines,
   visualizeLines(lines);
   while (!viewer_->wasStopped ()){
       viewer_->spinOnce (100);
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      boost::this_thread::sleep (boost::posix_time::microseconds (1000));
   }
 }
 
@@ -58,7 +58,7 @@ GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
 }
 
 void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segmentation) {
-  std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";
+  std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";    
   std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
   segmentation->clear();
   segmentation->resize(cloud.size(), 0);

@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(linefit_ground_segmentation_ros)
 
-set(ROS_COMPONENTS message_generation message_runtime rosbag roscpp tf linefit_ground_segmentation)
+set(ROS_COMPONENTS message_generation message_runtime rosbag roscpp tf linefit_ground_segmentation tf2_ros tf2_eigen utils)
 find_package(catkin COMPONENTS ${ROS_COMPONENTS})
+
+catkin_package()
 
 add_definitions(-std=c++11 -g)
 
@@ -14,8 +16,9 @@ add_definitions(${PCL_DEFINITIONS})
 include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(ground_segmentation_node src/ground_segmentation_node.cc)
-add_executable(ground_segmentation_test_node src/ground_segmentation_test_node.cc)
 target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+
+add_executable(ground_segmentation_test_node src/ground_segmentation_test_node.cc)
 target_link_libraries(ground_segmentation_test_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 #add_doxygen(NOT_AUTOMATIC)
