@@ -8,9 +8,9 @@ n_segments: 720 # number of radial segments. WAS: 360
 max_dist_to_line: 0.1 # maximum vertical distance of point to line to be considered ground.
 
 max_slope: 0.1  # maximum slope of a ground line.
-max_fit_error: 0.1  # maximum error of a point during line fit. (0.2)
-long_threshold: 10.0 # distance between points after which they are considered far from each other.
-max_long_height: 0.1  # maximum height change to previous point in long line.
+max_fit_error: 0.025  # maximum error of a point during line fit. (0.2)
+long_threshold: 15.0 # distance between points after which they are considered far from each other.
+max_long_height: 0.2  # maximum height change to previous point in long line.
 max_start_height: 0.4 # maximum difference to estimated ground height to start a new line.
 sensor_height: 1.85 # sensor height above ground.
 line_search_angle: 0.15 # how far to search in angular direction to find a line [rad].

@@ -90,11 +90,11 @@ class SegmentationNode
       float cs = std::cos(azimuth);
       float sn = std::sin(azimuth);
       for (float r : fake_r) {
-        Eigen::Vector3f p_veh(r * cs, r * sn, -params_.sensor_height);
-        p_veh = sens_to_veh * p_veh;
-        if (hitOnVehicle(p_veh)) {
-          continue;
-        }
+        //        Eigen::Vector3f p_veh(r * cs, r * sn, -params_.sensor_height);
+        //        p_veh = sens_to_veh * p_veh;
+        //        if (hitOnVehicle(p_veh)) {
+        //          continue;
+        //        }
         pcl::PointXYZ fake_p(r * cs, r * sn, -params_.sensor_height);
         pruned_cloud.points.push_back(fake_p);
       }
