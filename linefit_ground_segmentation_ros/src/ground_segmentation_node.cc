@@ -30,6 +30,14 @@ class SegmentationNode
     obstacle_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(obstacle_topic, 1, latch);
   }
 
+  bool hitOnVehicle(const Eigen::Vector3f& p_veh) const
+  {
+    return p_veh(0) >= -vehicle_params_.rear_axle_to_trailer_rear - 0.1 &&
+           p_veh(0) <= vehicle_params_.rear_axle_to_front_bumper + 01 &&
+           p_veh(1) >= -vehicle_params_.mirror_to_mirror / 2.0 - 0.1 &&
+           p_veh(1) <= vehicle_params_.mirror_to_mirror / 2.0 + 0.1;
+  }
+
   void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud)
   {
     // Look up transform to vehicle_frame
@@ -50,15 +58,13 @@ class SegmentationNode
     size_t num_duplicates = 0;
     std::set<std::tuple<float, float, float>> pnts_set;
     pcl::PointCloud<pcl::PointXYZ> pruned_cloud;
+
     for (const pcl::PointXYZ& p : cloud.points) {
       // Remove points on the truck
       Eigen::Vector3f p_veh(p.x, p.y, p.z);
       p_veh = sens_to_veh * p_veh;
 
-      if (p_veh(0) >= -vehicle_params_.rear_axle_to_trailer_rear - 0.1 &&
-          p_veh(0) <= vehicle_params_.rear_axle_to_front_bumper + 01 &&
-          p_veh(1) >= -vehicle_params_.mirror_to_mirror / 2.0 - 0.1 &&
-          p_veh(1) <= vehicle_params_.mirror_to_mirror / 2.0 + 0.1) {
+      if (hitOnVehicle(p_veh)) {
         // On ego, ignore
       } else {
         auto tup = std::make_tuple(p.x, p.y, p.z);
@@ -68,6 +74,29 @@ class SegmentationNode
         } else {
           num_duplicates++;
         }
+      }
+    }
+
+    // The segmentor requires three points to form a line, near the truck we don't see the ground
+    // so add fake points in concentric rings around the footprint of the sensor
+    std::vector<float> fake_r = { 1.2f * (float)std::sqrt(params_.r_min_square),
+                                  1.2f * (float)std::sqrt(params_.r_min_square) + 0.25f,
+                                  1.2f * (float)std::sqrt(params_.r_min_square) + 0.5f };
+    Eigen::VectorXf fake_azimuth =
+        Eigen::VectorXf::LinSpaced(params_.n_segments * 2, 0.0f, 2 * M_PI - 1e-5);
+
+    for (int i = 0; i < fake_azimuth.rows(); ++i) {
+      float azimuth = fake_azimuth(i);
+      float cs = std::cos(azimuth);
+      float sn = std::sin(azimuth);
+      for (float r : fake_r) {
+        Eigen::Vector3f p_veh(r * cs, r * sn, -params_.sensor_height);
+        p_veh = sens_to_veh * p_veh;
+        if (hitOnVehicle(p_veh)) {
+          continue;
+        }
+        pcl::PointXYZ fake_p(r * cs, r * sn, -params_.sensor_height);
+        pruned_cloud.points.push_back(fake_p);
       }
     }
 
