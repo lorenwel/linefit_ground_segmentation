@@ -3,7 +3,7 @@ n_threads: 2  # number of threads to use.
 r_min: 0.5 # minimum point distance.
 r_max: 200 # maximum point distance.
 n_bins: 800 # number of radial (range from sensor) bins per segment.
-n_segments: 720 # number of radial segments. WAS: 360
+n_segments: 360 # number of radial segments. WAS: 360
 
 max_dist_to_line: 0.1 # maximum vertical distance of point to line to be considered ground.
 

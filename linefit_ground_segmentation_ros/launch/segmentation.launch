@@ -2,12 +2,20 @@
 
 <launch>
 
-  <!-- Ground segmentation -->
-  <node name="ground_segmentation" pkg="linefit_ground_segmentation_ros" type="ground_segmentation_node" output="screen">
+  <!-- Ground segmentation, LEFT -->
+  <node name="ground_segmentation_left" pkg="linefit_ground_segmentation_ros" type="ground_segmentation_node" output="screen">
     <rosparam command="load" file="$(find linefit_ground_segmentation_ros)/launch/segmentation_params.yaml"/>
     <param name="input_topic" value="/vstl/velodyne_points" />
     <param name="ground_output_topic" value="/vstl/ground_cloud" />
     <param name="obstacle_output_topic" value="/vstl/obstacle_cloud" />
+  </node>
+
+  <!-- Ground segmentation, RIGHT -->
+  <node name="ground_segmentation_right" pkg="linefit_ground_segmentation_ros" type="ground_segmentation_node" output="screen">
+    <rosparam command="load" file="$(find linefit_ground_segmentation_ros)/launch/segmentation_params.yaml"/>
+    <param name="input_topic" value="/vstr/velodyne_points" />
+    <param name="ground_output_topic" value="/vstr/ground_cloud" />
+    <param name="obstacle_output_topic" value="/vstr/obstacle_cloud" />
   </node>
 
 </launch>
