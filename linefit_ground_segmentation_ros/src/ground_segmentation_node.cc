@@ -90,11 +90,6 @@ class SegmentationNode
       float cs = std::cos(azimuth);
       float sn = std::sin(azimuth);
       for (float r : fake_r) {
-        //        Eigen::Vector3f p_veh(r * cs, r * sn, -params_.sensor_height);
-        //        p_veh = sens_to_veh * p_veh;
-        //        if (hitOnVehicle(p_veh)) {
-        //          continue;
-        //        }
         pcl::PointXYZ fake_p(r * cs, r * sn, -params_.sensor_height);
         pruned_cloud.points.push_back(fake_p);
       }
@@ -103,7 +98,7 @@ class SegmentationNode
     pruned_cloud.header = cloud.header;
     pruned_cloud.height = 1;
     pruned_cloud.width = pruned_cloud.points.size();
-    ROS_INFO("Removed %lu duplicates out of %lu", num_duplicates, cloud.points.size());
+    ROS_DEBUG("Removed %lu duplicates out of %lu", num_duplicates, cloud.points.size());
 
     segmenter.segment(pruned_cloud, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
