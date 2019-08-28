@@ -8,6 +8,7 @@
     <param name="input_topic" value="/vstl/velodyne_points" />
     <param name="ground_output_topic" value="/vstl/ground_cloud" />
     <param name="obstacle_output_topic" value="/vstl/obstacle_cloud" />
+    <param name="all_points_topic" value="/vstl/all_points" />
   </node>
 
   <!-- Ground segmentation, RIGHT -->
@@ -16,6 +17,7 @@
     <param name="input_topic" value="/vstr/velodyne_points" />
     <param name="ground_output_topic" value="/vstr/ground_cloud" />
     <param name="obstacle_output_topic" value="/vstr/obstacle_cloud" />
+    <param name="all_points_topic" value="/vstr/all_points" />
   </node>
 
 </launch>

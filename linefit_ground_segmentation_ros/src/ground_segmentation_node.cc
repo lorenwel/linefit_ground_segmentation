@@ -1,16 +1,42 @@
 #include <pcl/io/ply_io.h>
 #include <pcl_ros/point_cloud.h>
 #include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <tf2_eigen/tf2_eigen.h>
 #include <tf2_ros/transform_listener.h>
+#include <velodyne_pointcloud/point_types.h>
 
 #include "ground_segmentation/ground_segmentation.h"
 #include "utils/params/params.h"
+
+// Data for segmented cloud (label:= ground=1u / non ground=0u)
+struct PointXYZIRL
+{
+  PCL_ADD_POINT4D;                // quad-word XYZ
+  float intensity;                ///< laser intensity reading
+  uint16_t ring;                  ///< laser ring number
+  uint16_t label;                 ///< point label
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW // ensure proper alignment
+} EIGEN_ALIGN16;
+
+// clang-format off
+// Register custom point struct according to PCL
+POINT_CLOUD_REGISTER_POINT_STRUCT(PointXYZIRL,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, intensity, intensity)
+                                  (uint16_t, ring, ring)
+                                  (uint16_t, label, label))
+// clang-format on
+
+pcl::PointCloud<PointXYZIRL>::Ptr all_points(new pcl::PointCloud<PointXYZIRL>());
 
 class SegmentationNode
 {
   ros::Publisher ground_pub_;
   ros::Publisher obstacle_pub_;
+  ros::Publisher combined_pub_;
   GroundSegmentationParams params_;
 
   tf2_ros::Buffer tf_buffer_;
@@ -20,14 +46,15 @@ class SegmentationNode
 
  public:
   SegmentationNode(ros::NodeHandle& nh, const std::string& ground_topic,
-                   const std::string& obstacle_topic, const GroundSegmentationParams& params,
-                   const bool& latch = false)
+                   const std::string& obstacle_topic, const std::string& all_points_topic,
+                   const GroundSegmentationParams& params, const bool& latch = false)
     : params_(params), tf_buffer_(), tf_listener_(tf_buffer_)
   {
     params::loadVehicleParams(&nh, &vehicle_params_);
 
     ground_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(ground_topic, 1, latch);
     obstacle_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(obstacle_topic, 1, latch);
+    combined_pub_ = nh.advertise<sensor_msgs::PointCloud2>(all_points_topic, 1, latch);
   }
 
   bool hitOnVehicle(const Eigen::Vector3f& p_veh) const
@@ -38,8 +65,11 @@ class SegmentationNode
            p_veh(1) <= vehicle_params_.mirror_to_mirror / 2.0 + 0.1;
   }
 
-  void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud)
+  void scanCallback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   {
+    pcl::PointCloud<velodyne_pointcloud::PointXYZIR> cloud;
+    pcl::fromROSMsg(*cloud_msg, cloud);
+
     // Look up transform to vehicle_frame
     Eigen::Isometry3f sens_to_veh = Eigen::Isometry3f::Identity();
     try {
@@ -57,9 +87,9 @@ class SegmentationNode
     // Remove duplicates
     size_t num_duplicates = 0;
     std::set<std::tuple<float, float, float>> pnts_set;
-    pcl::PointCloud<pcl::PointXYZ> pruned_cloud;
+    pcl::PointCloud<velodyne_pointcloud::PointXYZIR> pruned_cloud;
 
-    for (const pcl::PointXYZ& p : cloud.points) {
+    for (const auto& p : cloud.points) {
       // Remove points on the truck
       Eigen::Vector3f p_veh(p.x, p.y, p.z);
       p_veh = sens_to_veh * p_veh;
@@ -76,6 +106,7 @@ class SegmentationNode
         }
       }
     }
+    size_t num_acutal_pnts = pruned_cloud.points.size();
 
     // The segmentor requires three points to form a line, near the truck we don't see the ground
     // so add fake points in concentric rings around the footprint of the sensor
@@ -90,7 +121,12 @@ class SegmentationNode
       float cs = std::cos(azimuth);
       float sn = std::sin(azimuth);
       for (float r : fake_r) {
-        pcl::PointXYZ fake_p(r * cs, r * sn, -params_.sensor_height);
+        velodyne_pointcloud::PointXYZIR fake_p;
+        fake_p.x = r * cs;
+        fake_p.y = r * sn;
+        fake_p.z = -params_.sensor_height;
+        fake_p.intensity = 0.0f;
+        fake_p.ring = 0u;
         pruned_cloud.points.push_back(fake_p);
       }
     }
@@ -101,14 +137,21 @@ class SegmentationNode
     ROS_DEBUG("Removed %lu duplicates out of %lu", num_duplicates, cloud.points.size());
 
     segmenter.segment(pruned_cloud, &labels);
-    pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
+
+    pcl::PointCloud<velodyne_pointcloud::PointXYZIR> ground_cloud;
+    pcl::PointCloud<velodyne_pointcloud::PointXYZIR> obstacle_cloud;
+    all_points->clear();
+
     ground_cloud.header = pruned_cloud.header;
     obstacle_cloud.header = pruned_cloud.header;
-    for (size_t i = 0; i < pruned_cloud.size(); ++i) {
-      if (labels[i] == 1)
+    all_points->header = pruned_cloud.header;
+
+    for (size_t i = 0; i < num_acutal_pnts; ++i) {
+      if (labels[i] == 1) {
         ground_cloud.push_back(pruned_cloud[i]);
-      else
+      } else {
         obstacle_cloud.push_back(pruned_cloud[i]);
+      }
     }
     ground_pub_.publish(ground_cloud);
     obstacle_pub_.publish(obstacle_cloud);
@@ -123,7 +166,6 @@ int main(int argc, char** argv)
 
   // Do parameter stuff.
   GroundSegmentationParams params;
-  nh.param("visualize", params.visualize, params.visualize);
   nh.param("n_bins", params.n_bins, params.n_bins);
   nh.param("n_segments", params.n_segments, params.n_segments);
   nh.param("max_dist_to_line", params.max_dist_to_line, params.max_dist_to_line);
@@ -146,15 +188,16 @@ int main(int argc, char** argv)
     params.max_error_square = max_fit_error * max_fit_error;
   }
 
-  std::string ground_topic, obstacle_topic, input_topic;
+  std::string ground_topic, obstacle_topic, input_topic, all_points_topic;
   bool latch;
   nh.param<std::string>("input_topic", input_topic, "input_cloud");
   nh.param<std::string>("ground_output_topic", ground_topic, "ground_cloud");
   nh.param<std::string>("obstacle_output_topic", obstacle_topic, "obstacle_cloud");
+  nh.param<std::string>("all_points_topic", all_points_topic, "all_points");
   nh.param("latch", latch, false);
 
   // Start node.
-  SegmentationNode node(nh, ground_topic, obstacle_topic, params, latch);
+  SegmentationNode node(nh, ground_topic, obstacle_topic, all_points_topic, params, latch);
   ros::Subscriber cloud_sub;
   cloud_sub = nh.subscribe(input_topic, 1, &SegmentationNode::scanCallback, &node);
   ros::spin();
