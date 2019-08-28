@@ -1,18 +1,15 @@
 #ifndef GROUND_SEGMENTATION_BIN_H_
 #define GROUND_SEGMENTATION_BIN_H_
 
-#include <atomic>
-
-//#include <pcl/point_cloud.h>
-//#include <pcl/point_types.h>
 #include <velodyne_pointcloud/point_types.h>
+#include <atomic>
 
 class Bin
 {
  public:
   struct MinZPoint
   {
-    MinZPoint() : z(0), d(0)
+    MinZPoint() : z(0), d(0), intensity(0), ring(0)
     {
     }
     MinZPoint(const float& d, const float& z, const float& intensity, const uint16_t& ring)

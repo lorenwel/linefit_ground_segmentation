@@ -24,7 +24,7 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
   bin_index_.resize(cloud.size());
   segment_coordinates_.resize(cloud.size());
 
-  insertPoints(cloud);  
+  insertPoints(cloud);
 
   getLines();
 
