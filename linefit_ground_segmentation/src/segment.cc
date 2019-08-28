@@ -1,5 +1,7 @@
 #include "ground_segmentation/segment.h"
 
+#include <eigen3/Eigen/Dense>
+
 Segment::Segment(const unsigned int& n_bins, const double& max_slope, const double& max_error,
                  const double& long_threshold, const double& max_long_height,
                  const double& max_start_height, const double& sensor_height)
@@ -152,8 +154,8 @@ double Segment::getMaxError(const std::list<Bin::MinZPoint>& points, const Local
 Segment::LocalLine Segment::fitLocalLine(const std::list<Bin::MinZPoint>& points)
 {
   const unsigned int n_points = points.size();
-  Eigen::MatrixXd X(n_points, 2);
-  Eigen::VectorXd Y(n_points);
+  Eigen::MatrixXf X(n_points, 2);
+  Eigen::VectorXf Y(n_points);
   unsigned int counter = 0;
   for (auto iter = points.begin(); iter != points.end(); ++iter) {
     X(counter, 0) = iter->d;
@@ -161,7 +163,7 @@ Segment::LocalLine Segment::fitLocalLine(const std::list<Bin::MinZPoint>& points
     Y(counter) = iter->z;
     ++counter;
   }
-  Eigen::VectorXd result = X.colPivHouseholderQr().solve(Y);
+  Eigen::VectorXf result = X.colPivHouseholderQr().solve(Y);
   LocalLine line_result;
   line_result.first = result(0);
   line_result.second = result(1);

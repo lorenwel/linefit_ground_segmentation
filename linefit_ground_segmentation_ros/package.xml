@@ -22,7 +22,7 @@
   <depend>tf2_ros</depend>
   <depend>tf2_eigen</depend>
   <depend>utils</depend>
-
+  <depend>velodyne_pointcloud</depend>
   <depend>linefit_ground_segmentation</depend>
   
 </package>

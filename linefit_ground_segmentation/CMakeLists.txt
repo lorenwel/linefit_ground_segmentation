@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(linefit_ground_segmentation)
 
-find_package(catkin COMPONENTS roscpp)
+find_package(catkin COMPONENTS roscpp velodyne_pointcloud)
 
 add_definitions(-std=c++11 -g)
 
