@@ -145,8 +145,18 @@ class SegmentationNode
     ground_cloud.header = pruned_cloud.header;
     obstacle_cloud.header = pruned_cloud.header;
     all_points->header = pruned_cloud.header;
+    all_points->points.reserve(num_acutal_pnts);
 
     for (size_t i = 0; i < num_acutal_pnts; ++i) {
+      PointXYZIRL pnt;
+      pnt.x = pruned_cloud[i].x;
+      pnt.y = pruned_cloud[i].y;
+      pnt.z = pruned_cloud[i].z;
+      pnt.intensity = pruned_cloud[i].intensity;
+      pnt.ring = pruned_cloud[i].ring;
+      pnt.label = (labels[i] == 1 ? 1u : 0u);
+      all_points->points.push_back(pnt);
+
       if (labels[i] == 1) {
         ground_cloud.push_back(pruned_cloud[i]);
       } else {
@@ -155,6 +165,11 @@ class SegmentationNode
     }
     ground_pub_.publish(ground_cloud);
     obstacle_pub_.publish(obstacle_cloud);
+
+    sensor_msgs::PointCloud2 all_points_msg;
+    pcl::toROSMsg(*all_points, all_points_msg);
+
+    combined_pub_.publish(all_points_msg);
   }
 };
 

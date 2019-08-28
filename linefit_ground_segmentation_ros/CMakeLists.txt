@@ -6,7 +6,7 @@ find_package(catkin COMPONENTS ${ROS_COMPONENTS})
 
 catkin_package()
 
-add_definitions(-std=c++11 -g)
+add_definitions(-std=c++11)
 
 find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
