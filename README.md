@@ -10,6 +10,8 @@ Implementation of the ground segmentation algorithm proposed in
   year={2010},
   organization={IEEE}
 }
+
+[Paper location](https://drive.google.com/file/d/1plfnH2A0z9z6lmmax7IpowS4tvVdn0k0/view)
 ```
 The `linefit_ground_segmentation` package contains the ground segmentation library.
 A ROS interface is available in `linefit_ground_segmentation_ros` 
