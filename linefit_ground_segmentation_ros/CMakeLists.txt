@@ -25,4 +25,4 @@ target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES} ${PCL_LIBRARI
 # QTCREATOR #
 #############
 FILE(GLOB_RECURSE LibFiles "include/*")
-add_custom_target(headers SOURCES ${LibFiles})
+add_custom_target(${PROJECT_NAME}_headers SOURCES ${LibFiles})

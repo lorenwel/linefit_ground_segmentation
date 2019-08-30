@@ -26,4 +26,4 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 # QTCREATOR #
 #############
 FILE(GLOB_RECURSE LibFiles "include/*")
-add_custom_target(headers SOURCES ${LibFiles})
+add_custom_target(${PROJECT_NAME}_headers SOURCES ${LibFiles})
