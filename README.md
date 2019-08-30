@@ -10,22 +10,18 @@ Implementation of the ground segmentation algorithm proposed in
   year={2010},
   organization={IEEE}
 }
-
-[Paper location](https://drive.google.com/file/d/1plfnH2A0z9z6lmmax7IpowS4tvVdn0k0/view)
 ```
+[Paper location](https://drive.google.com/file/d/1plfnH2A0z9z6lmmax7IpowS4tvVdn0k0/view)
+
 The `linefit_ground_segmentation` package contains the ground segmentation library.
 A ROS interface is available in `linefit_ground_segmentation_ros` 
 
-The library can be compiled separately from the ROS interface if you're not using ROS.
 
 ## Installation
 
 Requires the following dependencies to be installed:
 
-- *catkin_simple* `https://github.com/catkin/catkin_simple.git` 
-- *glog_catkin* `https://github.com/ethz-asl/glog_catkin.git`
-
-Compile using your favorite catkin build tool (e.g. `catkin build linefit_ground_segmentation`)
+Compile using your favorite catkin build tool (e.g. `catkin build linefit_ground_segmentation_ros`)
 
 ## Launch instructions
 
@@ -57,4 +53,3 @@ Parameters are set in `linefit_ground_segmentation_ros/launch/segmentation_param
 
 - **n_threads**  Number of threads to use.
 - **latch**  Latch output point clouds in ROS node. 
-- **visualize** Visualize the segmentation result. **ONLY FOR DEBUGGING.** Do not set true during online operation.
