@@ -1,7 +1,7 @@
 n_threads: 4            # number of threads to use.
 
-r_max: 50               # maximum point distance.
 r_min: 0.5              # minimum point distance.
+r_max: 50               # maximum point distance.
 n_bins: 120             # number of radial bins.
 n_segments: 360         # number of radial segments.
 

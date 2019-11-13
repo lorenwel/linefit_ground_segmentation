@@ -40,13 +40,13 @@ Getting up and running with your own point cloud source should be as simple as:
 Parameters are set in `linefit_ground_segmentation_ros/launch/segmentation_params.yaml`
 
 ### Ground Condition
+- **sensor_height**  Sensor height above ground.
 - **max_dist_to_line**  maximum vertical distance of point to line to be considered ground.
 - **max_slope**  Maximum slope of a line.
 - **max_fit_error**  Maximum error a point is allowed to have in a line fit.
 - **max_start_height**  Maximum height difference between new point and estimated ground height to start a new line.
 - **long_threshold**  Distance after which the max_height condition is applied.
 - **max_height**  Maximum height difference between line points when they are farther apart than *long_threshold*.
-- **sensor_height**  Sensor height above ground.
 - **line_search_angle**  How far to search in angular direction to find a line. A higher angle helps fill "holes" in the ground segmentation.
 
 ### Segmentation
