@@ -42,6 +42,8 @@ Parameters are set in `linefit_ground_segmentation_ros/launch/segmentation_param
 This algorithm works on the assumption that you known the height of the sensor above ground. 
 Therefore, **you have to adjust the `sensor_height`** to your robot specifications, otherwise, it will not work.
 
+The default parameters should work on the KITTI dataset.
+
 ### Ground Condition
 - **sensor_height**  Sensor height above ground.
 - **max_dist_to_line**  maximum vertical distance of point to line to be considered ground.
