@@ -33,7 +33,7 @@ Input and output topic names can be specified in the same file.
 Getting up and running with your own point cloud source should be as simple as:
 
 1. Change the `input_topic` parameter in `segmentation.launch` to your topic.
-2. Adjust the `sensor_height` parameter in 'segmentation_params.yaml' to the height where the sensor is mounted on your robot (e.g. KITTI Velodyne: 1.8m)
+2. Adjust the `sensor_height` parameter in `segmentation_params.yaml` to the height where the sensor is mounted on your robot (e.g. KITTI Velodyne: 1.8m)
 
 ## Parameter description
 
