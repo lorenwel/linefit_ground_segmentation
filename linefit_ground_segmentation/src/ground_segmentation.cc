@@ -235,13 +235,13 @@ void GroundSegmentation::insertPoints(const PointCloud& cloud) {
   // Launch threads.
   for (unsigned int i = 0; i < params_.n_threads - 1; ++i) {
     const size_t start_index = i * points_per_thread;
-    const size_t end_index = (i+1) * points_per_thread - 1;
+    const size_t end_index = (i+1) * points_per_thread;
     threads[i] = std::thread(&GroundSegmentation::insertionThread, this,
                              cloud, start_index, end_index);
   }
   // Launch last thread which might have more points than others.
   const size_t start_index = (params_.n_threads - 1) * points_per_thread;
-  const size_t end_index = cloud.size() - 1;
+  const size_t end_index = cloud.size();
   threads[params_.n_threads - 1] =
       std::thread(&GroundSegmentation::insertionThread, this, cloud, start_index, end_index);
   // Wait for threads to finish.
