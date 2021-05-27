@@ -14,6 +14,7 @@ public:
 
 private:
   // Parameters. Description in GroundSegmentation.
+  const double min_slope_;
   const double max_slope_;
   const double max_error_;
   const double long_threshold_;
@@ -37,6 +38,7 @@ private:
 public:
 
   Segment(const unsigned int& n_bins,
+          const double& min_slope,
           const double& max_slope,
           const double& max_error,
           const double& long_threshold,

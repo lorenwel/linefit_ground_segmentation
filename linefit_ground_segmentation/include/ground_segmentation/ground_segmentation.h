@@ -18,6 +18,7 @@ struct GroundSegmentationParams {
       n_bins(30),
       n_segments(180),
       max_dist_to_line(0.15),
+      min_slope(0),
       max_slope(1),
       n_threads(4),
       max_error_square(0.01),
@@ -39,6 +40,8 @@ struct GroundSegmentationParams {
   int n_segments;
   // Maximum distance to a ground line to be classified as ground.
   double max_dist_to_line;
+  // Min slope to be considered ground line.
+  double min_slope;
   // Max slope to be considered ground line.
   double max_slope;
   // Max error for line fit.

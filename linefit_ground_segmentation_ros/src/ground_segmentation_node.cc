@@ -78,6 +78,7 @@ int main(int argc, char** argv) {
   nh.param("n_segments", params.n_segments, params.n_segments);
   nh.param("max_dist_to_line", params.max_dist_to_line, params.max_dist_to_line);
   nh.param("max_slope", params.max_slope, params.max_slope);
+  nh.param("min_slope", params.min_slope, params.min_slope);
   nh.param("long_threshold", params.long_threshold, params.long_threshold);
   nh.param("max_long_height", params.max_long_height, params.max_long_height);
   nh.param("max_start_height", params.max_start_height, params.max_start_height);

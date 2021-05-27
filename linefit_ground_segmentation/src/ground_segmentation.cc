@@ -48,6 +48,7 @@
 GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
     params_(params),
     segments_(params.n_segments, Segment(params.n_bins,
+                                         params.min_slope,
                                          params.max_slope,
                                          params.max_error_square,
                                          params.long_threshold,
