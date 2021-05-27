@@ -1,13 +1,20 @@
+#include <eigen_conversions/eigen_msg.h>
 #include <ros/ros.h>
+#include <pcl/common/transforms.h>
 #include <pcl/io/ply_io.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/point_cloud.h>
+#include <tf2_ros/transform_listener.h>
 
 #include "ground_segmentation/ground_segmentation.h"
 
 class SegmentationNode {
   ros::Publisher ground_pub_;
   ros::Publisher obstacle_pub_;
+  tf2_ros::Buffer tf_buffer_;
+  tf2_ros::TransformListener tf_listener_{tf_buffer_};
   GroundSegmentationParams params_;
+  std::string gravity_aligned_frame_;
 
 public:
   SegmentationNode(ros::NodeHandle& nh,
@@ -17,17 +24,39 @@ public:
                    const bool& latch = false) : params_(params) {
     ground_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(ground_topic, 1, latch);
     obstacle_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(obstacle_topic, 1, latch);
+    nh.param<std::string>("gravity_aligned_frame", gravity_aligned_frame_, "");
   }
 
   void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud) {
     GroundSegmentation segmenter(params_);
+    pcl::PointCloud<pcl::PointXYZ> cloud_out;
+
     std::vector<int> labels;
 
-    segmenter.segment(cloud, &labels);
+    if (!gravity_aligned_frame_.empty()) {
+      geometry_msgs::TransformStamped tf_stamped;
+      try{
+        tf_stamped = tf_buffer_.lookupTransform(gravity_aligned_frame_, cloud.header.frame_id,
+                                                pcl_conversions::fromPCL(cloud.header.stamp));
+        // Remove translation part.
+        tf_stamped.transform.translation.x = 0;
+        tf_stamped.transform.translation.y = 0;
+        tf_stamped.transform.translation.z = 0;
+        Eigen::Affine3d tf;
+        tf::transformMsgToEigen(tf_stamped.transform, tf);
+        pcl::transformPointCloud(cloud, cloud_out, tf);
+      }
+      catch (tf2::TransformException &ex) {
+        ROS_WARN_THROTTLE(1.0, "Failed to transform point cloud into gravity frame: %s",ex.what());
+        cloud_out = cloud;
+      }
+    }
+
+    segmenter.segment(cloud_out, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
-    ground_cloud.header = cloud.header;
-    obstacle_cloud.header = cloud.header;
-    for (size_t i = 0; i < cloud.size(); ++i) {
+    ground_cloud.header = cloud_out.header;
+    obstacle_cloud.header = cloud_out.header;
+    for (size_t i = 0; i < cloud_out.size(); ++i) {
       if (labels[i] == 1) ground_cloud.push_back(cloud[i]);
       else obstacle_cloud.push_back(cloud[i]);
     }

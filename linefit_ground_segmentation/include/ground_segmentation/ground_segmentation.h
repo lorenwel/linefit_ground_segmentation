@@ -6,7 +6,7 @@
 #include <glog/logging.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/visualization/pcl_visualizer.h>
+//#include <pcl/visualization/pcl_visualizer.h>
 
 #include "ground_segmentation/segment.h"
 
@@ -75,7 +75,7 @@ class GroundSegmentation {
   std::vector<Bin::MinZPoint> segment_coordinates_;
 
   // Visualizer.
-  std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+//  std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
 
   void assignCluster(std::vector<int>* segmentation);
 
@@ -100,12 +100,12 @@ class GroundSegmentation {
 
   void getMinZPointCloud(PointCloud* cloud);
 
-  void visualizePointCloud(const PointCloud::ConstPtr& cloud,
-                           const std::string& id = "point_cloud");
+//  void visualizePointCloud(const PointCloud::ConstPtr& cloud,
+//                           const std::string& id = "point_cloud");
 
-  void visualizeLines(const std::list<PointLine>& lines);
+//  void visualizeLines(const std::list<PointLine>& lines);
 
-  void visualize(const std::list<PointLine>& lines, const PointCloud::ConstPtr& cloud, const PointCloud::ConstPtr& ground_cloud, const PointCloud::ConstPtr& obstacle_cloud);
+//  void visualize(const std::list<PointLine>& lines, const PointCloud::ConstPtr& cloud, const PointCloud::ConstPtr& ground_cloud, const PointCloud::ConstPtr& obstacle_cloud);
 
 public:
 
