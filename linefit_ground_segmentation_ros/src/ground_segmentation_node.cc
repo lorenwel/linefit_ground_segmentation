@@ -29,7 +29,7 @@ public:
 
   void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud) {
     GroundSegmentation segmenter(params_);
-    pcl::PointCloud<pcl::PointXYZ> cloud_out;
+    pcl::PointCloud<pcl::PointXYZ> cloud_transformed;
 
     std::vector<int> labels;
 
@@ -44,19 +44,22 @@ public:
         tf_stamped.transform.translation.z = 0;
         Eigen::Affine3d tf;
         tf::transformMsgToEigen(tf_stamped.transform, tf);
-        pcl::transformPointCloud(cloud, cloud_out, tf);
+        pcl::transformPointCloud(cloud, cloud_transformed, tf);
       }
       catch (tf2::TransformException &ex) {
         ROS_WARN_THROTTLE(1.0, "Failed to transform point cloud into gravity frame: %s",ex.what());
-        cloud_out = cloud;
+        cloud_transformed = cloud;
       }
     }
 
-    segmenter.segment(cloud_out, &labels);
+    // Trick to avoid PC copy if we do not transform.
+    const pcl::PointCloud<pcl::PointXYZ>& cloud_proc = gravity_aligned_frame_.empty() ? cloud : cloud_transformed;
+
+    segmenter.segment(cloud_proc, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
-    ground_cloud.header = cloud_out.header;
-    obstacle_cloud.header = cloud_out.header;
-    for (size_t i = 0; i < cloud_out.size(); ++i) {
+    ground_cloud.header = cloud_proc.header;
+    obstacle_cloud.header = cloud_proc.header;
+    for (size_t i = 0; i < cloud_proc.size(); ++i) {
       if (labels[i] == 1) ground_cloud.push_back(cloud[i]);
       else obstacle_cloud.push_back(cloud[i]);
     }
@@ -67,7 +70,6 @@ public:
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "ground_segmentation");
-  google::InitGoogleLogging(argv[0]);
 
   ros::NodeHandle nh("~");
 

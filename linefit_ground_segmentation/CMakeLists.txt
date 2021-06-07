@@ -5,7 +5,7 @@ find_package(catkin_simple 0.1.0 REQUIRED )
 
 catkin_simple(ALL_DEPS_REQUIRED)
 
-#add_definitions(-std=c++14)
+add_definitions(-std=c++14)
 
 find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})

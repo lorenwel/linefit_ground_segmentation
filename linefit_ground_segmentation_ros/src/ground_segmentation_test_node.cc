@@ -6,7 +6,6 @@
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "ground_segmentation");
-  google::InitGoogleLogging(argv[0]);
 
   ros::NodeHandle nh("~");
 
