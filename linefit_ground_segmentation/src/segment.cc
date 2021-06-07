@@ -46,7 +46,7 @@ void Segment::fitSegmentLines() {
         // Check if not a good line.
         if (error > max_error_ ||
             std::fabs(cur_line.first) > max_slope_ ||
-            std::fabs(cur_line.first) < min_slope_ ||
+            (current_line_points.size() > 2 && std::fabs(cur_line.first) < min_slope_) ||
             is_long_line && std::fabs(expected_z - cur_point.z) > max_long_height_) {
           // Add line until previous point as ground.
           current_line_points.pop_back();
