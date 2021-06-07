@@ -33,6 +33,7 @@ public:
 
     std::vector<int> labels;
 
+    bool is_original_pc = true;
     if (!gravity_aligned_frame_.empty()) {
       geometry_msgs::TransformStamped tf_stamped;
       try{
@@ -45,15 +46,15 @@ public:
         Eigen::Affine3d tf;
         tf::transformMsgToEigen(tf_stamped.transform, tf);
         pcl::transformPointCloud(cloud, cloud_transformed, tf);
+        is_original_pc = false;
       }
       catch (tf2::TransformException &ex) {
         ROS_WARN_THROTTLE(1.0, "Failed to transform point cloud into gravity frame: %s",ex.what());
-        cloud_transformed = cloud;
       }
     }
 
     // Trick to avoid PC copy if we do not transform.
-    const pcl::PointCloud<pcl::PointXYZ>& cloud_proc = gravity_aligned_frame_.empty() ? cloud : cloud_transformed;
+    const pcl::PointCloud<pcl::PointXYZ>& cloud_proc = is_original_pc ? cloud : cloud_transformed;
 
     segmenter.segment(cloud_proc, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
