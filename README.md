@@ -21,9 +21,9 @@ The library can be compiled separately from the ROS interface if you're not usin
 Requires the following dependencies to be installed:
 
 - *catkin_simple* `https://github.com/catkin/catkin_simple.git` 
-- *glog_catkin* `https://github.com/ethz-asl/glog_catkin.git`
+- *eigen_conversions* `sudo apt install ros-noetic-eigen-conversions`
 
-Compile using your favorite catkin build tool (e.g. `catkin build linefit_ground_segmentation`)
+Compile using your favorite catkin build tool (e.g. `catkin build linefit_ground_segmentation_ros`)
 
 ## Launch instructions
 
@@ -48,11 +48,13 @@ The default parameters should work on the KITTI dataset.
 - **sensor_height**  Sensor height above ground.
 - **max_dist_to_line**  maximum vertical distance of point to line to be considered ground.
 - **max_slope**  Maximum slope of a line.
+- **min_slope**  Minimum slope of a line.
 - **max_fit_error**  Maximum error a point is allowed to have in a line fit.
 - **max_start_height**  Maximum height difference between new point and estimated ground height to start a new line.
 - **long_threshold**  Distance after which the max_height condition is applied.
 - **max_height**  Maximum height difference between line points when they are farther apart than *long_threshold*.
 - **line_search_angle**  How far to search in angular direction to find a line. A higher angle helps fill "holes" in the ground segmentation.
+- **gravity_aligned_frame**  Name of a coordinate frame which has its z-axis aligned with gravity. If specified, the incoming point cloud will be rotated, but not translated into this coordinate frame. If left empty, the sensor frame will be used.
 
 ### Segmentation
 
