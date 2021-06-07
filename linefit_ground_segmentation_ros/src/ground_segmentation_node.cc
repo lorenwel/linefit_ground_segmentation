@@ -57,9 +57,9 @@ public:
 
     segmenter.segment(cloud_proc, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
-    ground_cloud.header = cloud_proc.header;
-    obstacle_cloud.header = cloud_proc.header;
-    for (size_t i = 0; i < cloud_proc.size(); ++i) {
+    ground_cloud.header = cloud.header;
+    obstacle_cloud.header = cloud.header;
+    for (size_t i = 0; i < cloud.size(); ++i) {
       if (labels[i] == 1) ground_cloud.push_back(cloud[i]);
       else obstacle_cloud.push_back(cloud[i]);
     }
