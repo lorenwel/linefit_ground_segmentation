@@ -4,7 +4,7 @@
 
   <!-- Ground segmentation -->
   <node name="ground_segmentation" pkg="linefit_ground_segmentation_ros" type="ground_segmentation_node" output="screen">
-    <rosparam command="load" file="$(find linefit_ground_segmentation_ros)/launch/segmentation_params.yaml"/>
+    <rosparam command="load" file="$(find linefit_ground_segmentation_ros)/launch/segmentation_params_stairs.yaml"/>
     <param name="input_topic" value="/image_mask_filter/bpearl_rear/point_cloud" />
     <param name="ground_output_topic" value="ground_cloud" />
     <param name="obstacle_output_topic" value="obstacle_cloud" />
