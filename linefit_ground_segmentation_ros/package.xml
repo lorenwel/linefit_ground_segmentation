@@ -11,12 +11,9 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>catkin_simple</buildtool_depend>
   
-  <depend>glog_catkin</depend>
-  <depend>message_generation</depend>
-  <depend>message_runtime</depend>
-  <depend>rosbag</depend>
+  <depend>eigen_conversions</depend>
   <depend>roscpp</depend>  
-  <depend>tf</depend>
+  <depend>tf2_ros</depend>
 
   <depend>linefit_ground_segmentation</depend>
   

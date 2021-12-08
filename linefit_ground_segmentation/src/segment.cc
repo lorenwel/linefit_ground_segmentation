@@ -1,6 +1,7 @@
 #include "ground_segmentation/segment.h"
 
 Segment::Segment(const unsigned int& n_bins,
+                 const double& min_slope,
                  const double& max_slope,
                  const double& max_error,
                  const double& long_threshold,
@@ -8,6 +9,7 @@ Segment::Segment(const unsigned int& n_bins,
                  const double& max_start_height,
                  const double& sensor_height) :
                  bins_(n_bins),
+                 min_slope_(min_slope),
                  max_slope_(max_slope),
                  max_error_(max_error),
                  long_threshold_(long_threshold),
@@ -44,6 +46,7 @@ void Segment::fitSegmentLines() {
         // Check if not a good line.
         if (error > max_error_ ||
             std::fabs(cur_line.first) > max_slope_ ||
+            (current_line_points.size() > 2 && std::fabs(cur_line.first) < min_slope_) ||
             is_long_line && std::fabs(expected_z - cur_point.z) > max_long_height_) {
           // Add line until previous point as ground.
           current_line_points.pop_back();

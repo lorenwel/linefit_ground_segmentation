@@ -6,6 +6,8 @@
 #include <memory>
 #include <thread>
 
+using namespace std::chrono_literals;
+
 void GroundSegmentation::visualizePointCloud(const PointCloud::ConstPtr& cloud,
                                              const std::string& id) {
   viewer_->addPointCloud(cloud, id, 0);
@@ -41,13 +43,14 @@ void GroundSegmentation::visualize(const std::list<PointLine>& lines,
   visualizeLines(lines);
   while (!viewer_->wasStopped ()){
       viewer_->spinOnce (100);
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      std::this_thread::sleep_for(100ms);;
   }
 }
 
 GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
     params_(params),
     segments_(params.n_segments, Segment(params.n_bins,
+                                         params.min_slope,
                                          params.max_slope,
                                          params.max_error_square,
                                          params.long_threshold,
