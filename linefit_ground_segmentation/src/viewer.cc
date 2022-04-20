@@ -34,9 +34,13 @@ Viewer::Viewer() {
 
 
 Viewer::~Viewer() {
-  std::lock_guard<std::mutex> lock(viewer_mutex_);
+  redraw_ = false;
 
-  viewer_.close();
+  {
+    std::lock_guard<std::mutex> lock(viewer_mutex_);
+    viewer_.close();
+  }
+
   view_thread_.join();
 }
 
@@ -46,6 +50,7 @@ void Viewer::visualize(const std::list<PointLine>& lines,
                        const PointCloud::ConstPtr& min_cloud,
                        const PointCloud::ConstPtr& ground_cloud,
                        const PointCloud::ConstPtr& obstacle_cloud) {
+  redraw_ = false;
   std::lock_guard<std::mutex> lock(viewer_mutex_);
   // TODO: Do not delete and add every time.
   viewer_.removeAllShapes();
@@ -53,7 +58,6 @@ void Viewer::visualize(const std::list<PointLine>& lines,
   visualizePointCloud(ground_cloud, "ground_cloud");
   visualizePointCloud(obstacle_cloud, "obstacle_cloud");
   visualizeLines(lines);
-  redraw_ = true;
 }
 
 
@@ -81,12 +85,17 @@ void Viewer::addEmptyPointCloud(const std::string& id) {
 
 
 void Viewer::drawThread() {
-  while (!viewer_.wasStopped()){
-    if (redraw_) {
+  bool stopped = false;
+  while (!stopped) {
+    {
       std::lock_guard<std::mutex> lock(viewer_mutex_);
-      viewer_.spinOnce(1);
-      redraw_ = false;
+      redraw_ = true;
+      while (redraw_) {
+        viewer_.spinOnce(1);
+      }
     }
-    std::this_thread::sleep_for(10ms);
+    std::this_thread::sleep_for(1ms);
+    std::lock_guard<std::mutex> lock(viewer_mutex_);
+    stopped = viewer_.wasStopped();
   }
 }

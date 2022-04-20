@@ -14,8 +14,6 @@ public:
   Viewer();
   ~Viewer();
 
-  std::atomic<bool> redraw_{true};
-
   void visualize(const std::list<PointLine>& lines,
                  const PointCloud::ConstPtr& min_cloud,
                  const PointCloud::ConstPtr& ground_cloud,
@@ -27,6 +25,7 @@ protected:
   pcl::visualization::PCLVisualizer viewer_;
   std::thread view_thread_;
   std::mutex viewer_mutex_;
+  std::atomic<bool> redraw_{true};
 
   void visualizeLines(const std::list<PointLine>& lines);
 
