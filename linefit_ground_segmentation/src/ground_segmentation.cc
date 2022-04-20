@@ -8,44 +8,6 @@
 
 using namespace std::chrono_literals;
 
-void GroundSegmentation::visualizePointCloud(const PointCloud::ConstPtr& cloud,
-                                             const std::string& id) {
-  viewer_->addPointCloud(cloud, id, 0);
-}
-
-void GroundSegmentation::visualizeLines(const std::list<PointLine>& lines) {
-  size_t counter = 0;
-  for (auto it = lines.begin(); it != lines.end(); ++it) {
-    viewer_->addLine<pcl::PointXYZ>(it->first, it->second, std::to_string(counter++));
-  }
-}
-
-void GroundSegmentation::visualize(const std::list<PointLine>& lines,
-                                   const PointCloud::ConstPtr& min_cloud,
-                                   const PointCloud::ConstPtr& ground_cloud,
-                                   const PointCloud::ConstPtr& obstacle_cloud) {
-  viewer_->setBackgroundColor (0, 0, 0);
-  viewer_->addCoordinateSystem (1.0);
-  viewer_->initCameraParameters ();
-  viewer_->setCameraPosition(-2.0, 0, 2.0, 1.0, 0, 0);
-  visualizePointCloud(min_cloud, "min_cloud");
-  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
-                                             0.0f, 1.0f, 0.0f,
-                                             "min_cloud");
-  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
-                                             2.0f,
-                                             "min_cloud");
-  visualizePointCloud(ground_cloud, "ground_cloud");
-  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
-                                             1.0f, 0.0f, 0.0f,
-                                             "ground_cloud");
-  visualizePointCloud(obstacle_cloud, "obstacle_cloud");
-  visualizeLines(lines);
-  while (!viewer_->wasStopped ()){
-      viewer_->spinOnce (100);
-      std::this_thread::sleep_for(100ms);;
-  }
-}
 
 GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
     params_(params),
@@ -57,7 +19,7 @@ GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
                                          params.max_long_height,
                                          params.max_start_height,
                                          params.sensor_height)) {
-  if (params.visualize) viewer_ = std::make_shared<pcl::visualization::PCLVisualizer>("3D Viewer");
+  if (params.visualize) viewer_.reset(new Viewer());
 }
 
 void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segmentation) {
@@ -80,16 +42,16 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
 
   if (params_.visualize) {
     // Visualize.
-    PointCloud::Ptr obstacle_cloud(new PointCloud());
+    PointCloud::Ptr obstacle_cloud = std::make_shared<PointCloud>();
     // Get cloud of ground points.
-    PointCloud::Ptr ground_cloud(new PointCloud());
+    PointCloud::Ptr ground_cloud = std::make_shared<PointCloud>();
     for (size_t i = 0; i < cloud.size(); ++i) {
       if (segmentation->at(i) == 1) ground_cloud->push_back(cloud[i]);
       else obstacle_cloud->push_back(cloud[i]);
     }
-    PointCloud::Ptr min_cloud(new PointCloud());
+    PointCloud::Ptr min_cloud = std::make_shared<PointCloud>();
     getMinZPointCloud(min_cloud.get());
-    visualize(lines, min_cloud, ground_cloud, obstacle_cloud);
+    viewer_->visualize(lines, min_cloud, ground_cloud, obstacle_cloud);
   }
   std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::milli> fp_ms = end - start;

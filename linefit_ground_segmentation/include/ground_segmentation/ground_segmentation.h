@@ -3,11 +3,9 @@
 
 #include <mutex>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/visualization/pcl_visualizer.h>
-
 #include "ground_segmentation/segment.h"
+#include "ground_segmentation/typedefs.h"
+#include "ground_segmentation/viewer.h"
 
 struct GroundSegmentationParams {
   GroundSegmentationParams() :
@@ -77,7 +75,7 @@ class GroundSegmentation {
   std::vector<Bin::MinZPoint> segment_coordinates_;
 
   // Visualizer.
-  std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+  std::unique_ptr<Viewer> viewer_;
 
   void assignCluster(std::vector<int>* segmentation);
 

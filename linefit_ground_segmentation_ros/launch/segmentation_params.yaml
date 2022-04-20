@@ -19,4 +19,4 @@ line_search_angle: 0.1      # how far to search in angular direction to find a l
 gravity_aligned_frame: ""  # Frame which has its z axis aligned with gravity. (Sensor frame if empty.)
 
 latch: false               # latch output topics or not
-visualize: false           # visualize segmentation result - USE ONLY FOR DEBUGGING
+visualize: true            # visualize segmentation result - USE ONLY FOR DEBUGGING

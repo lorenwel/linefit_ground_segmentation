@@ -15,7 +15,7 @@ add_definitions(${PCL_DEFINITIONS})
 find_package(Eigen3 REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
-cs_add_library(${PROJECT_NAME} src/ground_segmentation.cc src/segment.cc src/bin.cc)
+cs_add_library(${PROJECT_NAME} src/ground_segmentation.cc src/segment.cc src/bin.cc src/viewer.cc)
 
 #add_doxygen(NOT_AUTOMATIC)
 
