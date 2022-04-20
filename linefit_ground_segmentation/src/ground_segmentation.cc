@@ -40,11 +40,18 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
   }
   assignCluster(segmentation);
 
+  size_t n_ground = 0;
+  for (const auto seg: *segmentation) {
+    n_ground += seg;
+  }
+
   if (params_.visualize) {
     // Visualize.
     PointCloud::Ptr obstacle_cloud = std::make_shared<PointCloud>();
+    obstacle_cloud->reserve(segmentation->size() - n_ground);
     // Get cloud of ground points.
     PointCloud::Ptr ground_cloud = std::make_shared<PointCloud>();
+    ground_cloud->reserve(n_ground);
     for (size_t i = 0; i < cloud.size(); ++i) {
       if (segmentation->at(i) == 1) ground_cloud->push_back(cloud[i]);
       else obstacle_cloud->push_back(cloud[i]);
@@ -99,6 +106,7 @@ void GroundSegmentation::lineFitThread(const unsigned int start_index,
 }
 
 void GroundSegmentation::getMinZPointCloud(PointCloud* cloud) {
+  cloud->reserve(params_.n_segments * params_.n_bins);
   const double seg_step = 2*M_PI / params_.n_segments;
   double angle = -M_PI + seg_step/2;
   for (auto seg_iter = segments_.begin(); seg_iter != segments_.end(); ++seg_iter) {
