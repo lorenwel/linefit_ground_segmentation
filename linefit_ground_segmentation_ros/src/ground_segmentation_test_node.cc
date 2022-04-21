@@ -43,6 +43,8 @@ int main(int argc, char** argv) {
     std::vector<int> labels;
 
     segmenter.segment(cloud, &labels);
+
+    ros::spin();
   }
   else {
     std::cerr << "No point cloud file given\n";
