@@ -100,6 +100,8 @@ class GroundSegmentation {
 
   void getMinZPointCloud(PointCloud* cloud);
 
+  void resetSegments();
+
   void visualizePointCloud(const PointCloud::ConstPtr& cloud,
                            const std::string& id = "point_cloud");
 

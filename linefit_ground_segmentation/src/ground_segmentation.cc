@@ -29,6 +29,7 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
   segmentation->resize(cloud.size(), 0);
   bin_index_.resize(cloud.size());
   segment_coordinates_.resize(cloud.size());
+  resetSegments();
 
   insertPoints(cloud);
   std::list<PointLine> lines;
@@ -117,6 +118,17 @@ void GroundSegmentation::getMinZPointCloud(PointCloud* cloud) {
 
     angle += seg_step;
   }
+}
+
+void GroundSegmentation::resetSegments() {
+  segments_ = std::vector<Segment>(params_.n_segments, Segment(params_.n_bins,
+                                                               params_.min_slope,
+                                                               params_.max_slope,
+                                                               params_.max_error_square,
+                                                               params_.long_threshold,
+                                                               params_.max_long_height,
+                                                               params_.max_start_height,
+                                                               params_.sensor_height));
 }
 
 pcl::PointXYZ GroundSegmentation::minZPointTo3d(const Bin::MinZPoint &min_z_point,
