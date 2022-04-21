@@ -14,6 +14,7 @@ class SegmentationNode {
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_{tf_buffer_};
   GroundSegmentationParams params_;
+  GroundSegmentation segmenter_;
   std::string gravity_aligned_frame_;
 
 public:
@@ -21,14 +22,13 @@ public:
                    const std::string& ground_topic,
                    const std::string& obstacle_topic,
                    const GroundSegmentationParams& params,
-                   const bool& latch = false) : params_(params) {
+                   const bool& latch = false) : params_(params), segmenter_(params) {
     ground_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(ground_topic, 1, latch);
     obstacle_pub_ = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>(obstacle_topic, 1, latch);
     nh.param<std::string>("gravity_aligned_frame", gravity_aligned_frame_, "");
   }
 
   void scanCallback(const pcl::PointCloud<pcl::PointXYZ>& cloud) {
-    GroundSegmentation segmenter(params_);
     pcl::PointCloud<pcl::PointXYZ> cloud_transformed;
 
     std::vector<int> labels;
@@ -56,7 +56,7 @@ public:
     // Trick to avoid PC copy if we do not transform.
     const pcl::PointCloud<pcl::PointXYZ>& cloud_proc = is_original_pc ? cloud : cloud_transformed;
 
-    segmenter.segment(cloud_proc, &labels);
+    segmenter_.segment(cloud_proc, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
     ground_cloud.header = cloud.header;
     obstacle_cloud.header = cloud.header;

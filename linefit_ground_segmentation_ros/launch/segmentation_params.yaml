@@ -16,7 +16,7 @@ max_long_height: 0.1        # maximum height change to previous point in long li
 max_start_height: 0.2       # maximum difference to estimated ground height to start a new line.
 line_search_angle: 0.1      # how far to search in angular direction to find a line [rad].
 
-gravity_aligned_frame: ""  # Frame which has its z axis aligned with gravity. (Sensor frame if empty.)
+gravity_aligned_frame: ""   # Frame which has its z axis aligned with gravity. (Sensor frame if empty.)
 
-latch: false               # latch output topics or not
-visualize: false           # visualize segmentation result - USE ONLY FOR DEBUGGING
+latch: false                # latch output topics or not
+visualize: false            # visualize segmentation result - USE ONLY FOR DEBUGGING
