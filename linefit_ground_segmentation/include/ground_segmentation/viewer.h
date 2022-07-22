@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <list>
 #include <mutex>
 #include <thread>
 
@@ -15,9 +16,9 @@ public:
   ~Viewer();
 
   void visualize(const std::list<PointLine>& lines,
-                 const PointCloud::ConstPtr& min_cloud,
-                 const PointCloud::ConstPtr& ground_cloud,
-                 const PointCloud::ConstPtr& obstacle_cloud);
+                 const PointCloudConstPtr& min_cloud,
+                 const PointCloudConstPtr& ground_cloud,
+                 const PointCloudConstPtr& obstacle_cloud);
 
 protected:
 
@@ -29,7 +30,7 @@ protected:
 
   void visualizeLines(const std::list<PointLine>& lines);
 
-  void visualizePointCloud(const PointCloud::ConstPtr& cloud,
+  void visualizePointCloud(const PointCloudConstPtr& cloud,
                            const std::string& id);
 
   void addEmptyPointCloud(const std::string& id);

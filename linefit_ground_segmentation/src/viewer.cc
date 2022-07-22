@@ -47,9 +47,9 @@ Viewer::~Viewer() {
 
 
 void Viewer::visualize(const std::list<PointLine>& lines,
-                       const PointCloud::ConstPtr& min_cloud,
-                       const PointCloud::ConstPtr& ground_cloud,
-                       const PointCloud::ConstPtr& obstacle_cloud) {
+                       const PointCloudConstPtr& min_cloud,
+                       const PointCloudConstPtr& ground_cloud,
+                       const PointCloudConstPtr& obstacle_cloud) {
   redraw_ = false;
   std::lock_guard<std::mutex> lock(viewer_mutex_);
   // TODO: Do not delete and add every time.
@@ -71,7 +71,7 @@ void Viewer::visualizeLines(const std::list<PointLine>& lines) {
 
 
 
-void Viewer::visualizePointCloud(const PointCloud::ConstPtr& cloud,
+void Viewer::visualizePointCloud(const PointCloudConstPtr& cloud,
                                              const std::string& id) {
   viewer_.updatePointCloud(cloud, id);
 }

@@ -5,5 +5,7 @@
 
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+typedef std::shared_ptr<PointCloud> PointCloudPtr;
+typedef std::shared_ptr<const PointCloud> PointCloudConstPtr;
 
 typedef std::pair<pcl::PointXYZ, pcl::PointXYZ> PointLine;
