@@ -48,16 +48,16 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
 
   if (params_.visualize) {
     // Visualize.
-    PointCloudPtr obstacle_cloud = std::make_shared<PointCloud>();
+    PointCloudPtr obstacle_cloud = boost::make_shared<PointCloud>();
     obstacle_cloud->reserve(segmentation->size() - n_ground);
     // Get cloud of ground points.
-    PointCloudPtr ground_cloud = std::make_shared<PointCloud>();
+    PointCloudPtr ground_cloud = boost::make_shared<PointCloud>();
     ground_cloud->reserve(n_ground);
     for (size_t i = 0; i < cloud.size(); ++i) {
       if (segmentation->at(i) == 1) ground_cloud->push_back(cloud[i]);
       else obstacle_cloud->push_back(cloud[i]);
     }
-    PointCloudPtr min_cloud = std::make_shared<PointCloud>();
+    PointCloudPtr min_cloud = boost::make_shared<PointCloud>();
     getMinZPointCloud(min_cloud.get());
     viewer_->visualize(lines, min_cloud, ground_cloud, obstacle_cloud);
   }
