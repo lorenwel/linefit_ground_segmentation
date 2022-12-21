@@ -165,7 +165,7 @@ void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
       double dist = segments_[segment_index].verticalDistanceToLine(point_2d.d, point_2d.z);
       // Search neighboring segments.
       int steps = 1;
-      while (dist == -1 && steps * segment_step < params_.line_search_angle) {
+      while (dist < 0 && steps * segment_step < params_.line_search_angle) {
         // Fix indices that are out of bounds.
         int index_1 = segment_index + steps;
         while (index_1 >= params_.n_segments) index_1 -= params_.n_segments;
@@ -174,12 +174,14 @@ void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
         // Get distance to neighboring lines.
         const double dist_1 = segments_[index_1].verticalDistanceToLine(point_2d.d, point_2d.z);
         const double dist_2 = segments_[index_2].verticalDistanceToLine(point_2d.d, point_2d.z);
-        // Select larger distance if both segments return a valid distance.
-        if (dist_1 > dist) {
+        if (dist_1 >= 0) {
           dist = dist_1;
         }
-        if (dist_2 > dist) {
-          dist = dist_2;
+        if (dist_2 >= 0) {
+          // Select smaller distance if both segments return a valid distance.
+          if (dist < 0 || dist_2 < dist) {
+            dist = dist_2;
+          }
         }
         ++steps;
       }
