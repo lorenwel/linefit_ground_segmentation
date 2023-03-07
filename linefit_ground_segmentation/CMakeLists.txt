@@ -4,17 +4,23 @@ project(linefit_ground_segmentation)
 find_package(catkin)
 
 find_package(PCL REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
 
 find_package(Eigen3 REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS})
+
+IF(catkin_FOUND)
+
+    catkin_package(
+        INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
+        LIBRARIES ${PROJECT_NAME}
+        DEPENDS PCL
+    )
+
+ENDIF()
 
 include_directories(
     include
     ${EIGEN3_INCLUDE_DIR}
-    ${PCL_INCLUDE_DIR}
+    ${PCL_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} SHARED
@@ -24,17 +30,14 @@ add_library(${PROJECT_NAME} SHARED
     src/viewer.cc
 )
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
+target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
 
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
+
+add_definitions(${PCL_DEFINITIONS})
 
 
 IF(catkin_FOUND)
-
-    catkin_package(
-        INCLUDE_DIRS include
-        LIBRARIES ${PROJECT_NAME}
-        DEPENDS Eigen3 PCL
-    )
 
     install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -42,8 +45,8 @@ IF(catkin_FOUND)
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
     )
 
-    install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+    install(DIRECTORY include/
+        DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
         FILES_MATCHING PATTERN "*.h"
         PATTERN ".svn" EXCLUDE
     )

@@ -1,26 +1,50 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(linefit_ground_segmentation_ros)
 
-find_package(catkin_simple 0.1.0 REQUIRED )
+find_package(catkin REQUIRED
+    eigen_conversions
+    linefit_ground_segmentation
+    pcl_conversions
+    pcl_ros
+    roscpp
+    tf2_ros
+)
 
-catkin_simple(ALL_DEPS_REQUIRED)
+catkin_package(
+    CATKIN_DEPENDS
+        eigen_conversions
+        linefit_ground_segmentation
+        pcl_conversions
+        pcl_ros
+        roscpp
+        tf2_ros
+)
+message(catkin_INCLUDE_DIRS="${catkin_INCLUDE_DIRS}")
 
-add_definitions(-std=c++14)
-
-find_package(PCL REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
+include_directories(
+    ${catkin_INCLUDE_DIRS}
+)
 
 add_executable(ground_segmentation_node src/ground_segmentation_node.cc)
 add_executable(ground_segmentation_test_node src/ground_segmentation_test_node.cc)
-target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
-target_link_libraries(ground_segmentation_test_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES})
+target_link_libraries(ground_segmentation_test_node ${catkin_LIBRARIES})
+target_compile_features(ground_segmentation_node PRIVATE cxx_std_14)
+target_compile_features(ground_segmentation_test_node PRIVATE cxx_std_14)
 
 #add_doxygen(NOT_AUTOMATIC)
 
-cs_install()
-cs_export()
+install(TARGETS ground_segmentation_node ground_segmentation_test_node
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(
+    FILES
+        launch/segmentation.launch
+        launch/test.launch
+        launch/segmentation_params.yaml
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 #############
 # QTCREATOR #
