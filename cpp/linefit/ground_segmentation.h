@@ -94,7 +94,7 @@ class GroundSegmentation {
 public:
 
   GroundSegmentation(){};
-  GroundSegmentation(const GroundSegmentationParams& params = GroundSegmentationParams());
+  // GroundSegmentation(const GroundSegmentationParams& params = GroundSegmentationParams());
   virtual ~GroundSegmentation() = default;
 
   std::vector<bool> segment(const PointCloud& cloud);

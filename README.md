@@ -11,7 +11,13 @@ Running on macOS, Windows and Linux, with Python Version >= 3.8.
 
 Option A: Install from pypi `pip install linefit`
 
-Option B: Clone this repo and run `python setup.py install`
+Option B: Clone this repo and run following to build:
+```bash
+cmake -B build && cmake --build build
+pip install .
+python3 -c 'import linefit; print(linefit.__version__)'
+```
+
 
 ## 1. Run the example
 

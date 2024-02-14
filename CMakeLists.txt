@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(dufomap
+project(linefit_py
 	VERSION 1.0.0
-	DESCRIPTION "DUFOMap"
+	DESCRIPTION "linefit_py"
 	LANGUAGES CXX
 )
 
@@ -30,5 +30,5 @@ find_package(nanobind CONFIG REQUIRED)
 # find_package(nanobind CONFIG REQUIRED)
 # <=== NanoBind Things
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp ${CMAKE_CURRENT_BINARY_DIR}/dufomap)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
 add_subdirectory(python)

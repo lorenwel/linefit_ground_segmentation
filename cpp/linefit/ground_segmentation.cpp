@@ -10,18 +10,18 @@
 using namespace std::chrono_literals;
 
 
-GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
-    params_(params),
-    segments_(params.n_segments, Segment(params.n_bins,
-                                         params.min_slope,
-                                         params.max_slope,
-                                         params.max_error_square,
-                                         params.long_threshold,
-                                         params.max_long_height,
-                                         params.max_start_height,
-                                         params.sensor_height)) {
+// GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
+//     params_(params),
+//     segments_(params.n_segments, Segment(params.n_bins,
+//                                          params.min_slope,
+//                                          params.max_slope,
+//                                          params.max_error_square,
+//                                          params.long_threshold,
+//                                          params.max_long_height,
+//                                          params.max_start_height,
+//                                          params.sensor_height)) {
   
-}
+// }
 
 std::vector<bool> GroundSegmentation::segment(const PointCloud& cloud) {
   

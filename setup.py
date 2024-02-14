@@ -1,17 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='dufomap',
-    version='0.3.0',
-    description='DUFOMap Python bindings',
-    author='Qingwen Zhang, Daniel Duberg',
-    author_email='qzhangcb@connect.ust.hk',
-    url='https://github.com/yourusername/dufomap',
+    name='linefit',
+    version='0.1.0',
+    description='linefit ground segmentation algorithm Python bindings',
+    author='Qingwen Zhang',
+    author_email='qingwen@kth.se',
+    url='https://github.com/Kin-Zhang/linefit',
     packages=find_packages(),
-    # package_data={
-    #     'dufomap': ['build/libdm_lib.so'],  # Replace 'lib/' with the actual relative path within your package
-    #     'glog': ['build/glog/libglog.so'],
-    # },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: BSD License',
