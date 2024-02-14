@@ -1,31 +1,66 @@
 
-// #include <toml.hpp>
 #include <chrono>
 #include <cmath>
 #include <list>
 #include <memory>
 #include <thread>
+#include <algorithm>
 #include <iostream>
+#include <type_traits>
 
-
+#include "toml.hpp"
 #include "ground_segmentation.h"
 
 
 using namespace std::chrono_literals;
 
 
-// GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
-//     params_(params),
-//     segments_(params.n_segments, Segment(params.n_bins,
-//                                          params.min_slope,
-//                                          params.max_slope,
-//                                          params.max_error_square,
-//                                          params.long_threshold,
-//                                          params.max_long_height,
-//                                          params.max_start_height,
-//                                          params.sensor_height)) {
-  
-// }
+// since C++17 we use, C++20 we can use std::remove_cvref_t
+template <typename T>
+using remove_cvref_t = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
+
+template <typename T>
+remove_cvref_t<T> read(toml::node_view<toml::node> node, T&& default_value){
+    return node.value_or(std::forward<T>(default_value));
+}
+
+GroundSegmentation::GroundSegmentation(const std::string &toml_file) {
+  std::cout << "Loading parameters from file: " << toml_file << std::endl;
+  toml::table config = toml::parse_file(toml_file);
+
+  // important one:
+  params_.sensor_height = read(config["important"]["height"], 0.4);
+
+  double r_min = read(config["segments"]["r_min"], 0.5);
+  double r_max = read(config["segments"]["r_max"], 50);
+  params_.r_min_square = r_min * r_min;
+  params_.r_max_square = r_max * r_max;
+  params_.n_bins = read(config["segments"]["n_bins"], 120);
+  params_.n_segments = read(config["segments"]["n_segments"], 360);
+
+  double max_fit_error = read(config["ground"]["max_fit_error"], 0.01);
+  params_.min_slope = read(config["ground"]["min_slope"], 0.0);
+  params_.max_slope = read(config["ground"]["max_slope"], 0.1);
+  params_.max_dist_to_line = read(config["ground"]["max_dist_to_line"], 0.1);
+  params_.max_error_square = max_fit_error * max_fit_error;
+  params_.long_threshold = read(config["ground"]["long_threshold"], 1.0);
+  params_.max_long_height = read(config["ground"]["max_long_height"], 0.2);
+  params_.max_start_height = read(config["ground"]["max_start_height"], 0.2);
+  params_.line_search_angle = read(config["ground"]["line_search_angle"], 0.33);
+
+  // general
+  unsigned int num_thread = read(config["general"]["n_threads"], 8);
+  params_.n_threads = std::min(num_thread, std::thread::hardware_concurrency()-1);
+
+  std::cout << "Parameters loaded.\n";
+  std::cout << "\tSensor height: " << params_.sensor_height << std::endl;
+  std::cout << "\tmin_slope: " << params_.min_slope << std::endl;
+  std::cout << "\tmax_slope: " << params_.max_slope << std::endl;
+  std::cout << "\tmax_fit_error: " << max_fit_error << std::endl;
+  std::cout << "\tmax_dist_to_line: " << params_.max_dist_to_line << std::endl;
+  std::cout << "\tlong_threshold: " << params_.long_threshold << std::endl;
+
+}
 
 std::vector<bool> GroundSegmentation::segment(const std::vector<std::vector<float>> points) {
   // TODO: Maybe there is a better way to convert the points to Eigen::Vector3d

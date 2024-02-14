@@ -9,6 +9,8 @@ Running on macOS, Windows and Linux, with Python Version >= 3.8.
 
 ## 0. Setup
 
+Choose one of the following options to install the package (recommended to use Option A `pip install linefit`):
+
 Option A: Install from pypi `pip install linefit`
 
 Option B: Clone this repo and run following to build:
@@ -21,14 +23,20 @@ python3 -c 'import linefit; print(linefit.__version__)'
 
 ## 1. Run the example
 
-After 
-```python
+After installation, you can run the example by, it will directly show a default effect of demo data.
 
+```bash
+python example.py
 ```
+
+A window will pop up and show the ground segmentation result.
+![](./assets/docs/demo.png)
 
 ## Parameter description
 
-Parameters are set in `linefit_ground_segmentation_ros/launch/segmentation_params.y()aml`
+TL;DR: tune the `sensor_height` to offset the ground point z to `0`. Others are optional for better performance. If you are interested in the details, please read the following.
+
+Parameters are set in `assets/config.toml`
 
 This algorithm works on the assumption that you known the height of the sensor above ground. 
 Therefore, **you have to adjust the `sensor_height`** to your robot specifications, otherwise, it will not work.
@@ -45,7 +53,6 @@ The default parameters should work on the KITTI dataset.
 - **long_threshold**  Distance after which the max_height condition is applied.
 - **max_height**  Maximum height difference between line points when they are farther apart than *long_threshold*.
 - **line_search_angle**  How far to search in angular direction to find a line. A higher angle helps fill "holes" in the ground segmentation.
-- **gravity_aligned_frame**  Name of a coordinate frame which has its z-axis aligned with gravity. If specified, the incoming point cloud will be rotated, but not translated into this coordinate frame. If left empty, the sensor frame will be used.
 
 ### Segmentation
 
@@ -57,8 +64,6 @@ The default parameters should work on the KITTI dataset.
 ### Other
 
 - **n_threads**  Number of threads to use.
-- **latch**  Latch output point clouds in ROS node. 
-- **visualize** Visualize the segmentation result. **ONLY FOR DEBUGGING.** Do not set true during online operation.
 
 ## Acknowledgement & Citation
 

@@ -8,12 +8,15 @@ struct GroundSegmentationParams {
   GroundSegmentationParams() :
       r_min_square(0.5 * 0.5),
       r_max_square(50 * 50),
-      n_bins(120),
+      n_threads(8),
+
       n_segments(360),
-      max_dist_to_line(0.1),
+      n_bins(120),
+
       min_slope(0),
       max_slope(0.1),
-      n_threads(8),
+      
+      max_dist_to_line(0.1),
       max_error_square(0.01),
       long_threshold(1.0),
       max_long_height(0.2),
@@ -57,7 +60,7 @@ typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> PointLine;
 
 class GroundSegmentation {
 
-  const GroundSegmentationParams params_;
+  GroundSegmentationParams params_;
 
   // Access with segments_[segment][bin].
   std::vector<Segment> segments_;
@@ -94,7 +97,7 @@ class GroundSegmentation {
 public:
 
   GroundSegmentation(){};
-  // GroundSegmentation(const GroundSegmentationParams& params = GroundSegmentationParams());
+  GroundSegmentation(const std::string& toml_file);
   // virtual ~GroundSegmentation() = default;
 
   std::vector<bool> segment(const std::vector<std::vector<float>> points);

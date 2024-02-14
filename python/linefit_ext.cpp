@@ -40,7 +40,7 @@
 
 #include <Eigen/Core>
 #include "nanobind/nanobind.h"
-// #include <nanobind/stl/string.h>
+#include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 #include <nanobind/ndarray.h>
 // #include <nanobind/stl/bind_vector.h>
@@ -55,6 +55,7 @@ using namespace nb::literals;
 NB_MODULE(linefit, m) {
     nb::class_<GroundSegmentation>(m, "ground_seg")
         .def(nb::init<>(), "linefit ground segmentation constructor, param: TODO")
+        .def(nb::init<const std::string &>(), "linefit ground segmentation constructor, with toml file as param file input.")
         // .def("run", nb::overload_cast<std::vector<Eigen::Vector3d> &>(&GroundSegmentation::segment), "points"_a);
         .def("run", &GroundSegmentation::segment, "points"_a, nanobind::rv_policy::reference);
 }

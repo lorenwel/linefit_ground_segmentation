@@ -4,3 +4,5 @@ build/*
 cpp/build/*
 
 .vscode/*
+
+*.pyc
