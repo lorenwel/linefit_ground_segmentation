@@ -1,9 +1,9 @@
 /*!
- * dufomap nb module file
+ * linefit nb module file
  *
- * @author Qingwen Zhang (qingwen@kth.se)
+ * @author Qingwen Zhang (https://kin-zhang.github.io/)
  * @version 1.0.0
- * @date 2023-10-27 18:09
+ * @date 2024-02-14 20:13
  *
  * @copyright Copyright (c) 2022, Qingwen Zhang, KTH Royal Institute of Technology
  *
