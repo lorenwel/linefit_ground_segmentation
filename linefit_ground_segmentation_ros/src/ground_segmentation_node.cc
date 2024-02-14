@@ -1,7 +1,6 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <ros/ros.h>
 #include <pcl/common/transforms.h>
-#include <pcl/io/ply_io.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/point_cloud.h>
 #include <tf2_ros/transform_listener.h>

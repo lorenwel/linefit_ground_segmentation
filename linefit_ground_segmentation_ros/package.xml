@@ -9,13 +9,13 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <buildtool_depend>catkin_simple</buildtool_depend>
   
   <depend>eigen_conversions</depend>
-  <depend>roscpp</depend>  
-  <depend>tf2_ros</depend>
-
   <depend>linefit_ground_segmentation</depend>
+  <depend>roscpp</depend>
+  <depend>pcl_conversions</depend>  
+  <depend>pcl_ros</depend>
+  <depend>tf2_ros</depend>
   
 </package>
 

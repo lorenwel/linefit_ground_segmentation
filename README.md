@@ -20,7 +20,6 @@ The library can be compiled separately from the ROS interface if you're not usin
 
 Requires the following dependencies to be installed:
 
-- *catkin_simple* `https://github.com/catkin/catkin_simple.git` 
 - *eigen_conversions* `sudo apt install ros-noetic-eigen-conversions`
 
 Compile using your favorite catkin build tool (e.g. `catkin build linefit_ground_segmentation_ros`)
