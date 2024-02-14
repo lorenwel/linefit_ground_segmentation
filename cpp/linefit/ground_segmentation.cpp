@@ -40,34 +40,29 @@ std::vector<bool> GroundSegmentation::segment(const std::vector<std::vector<floa
   segment_coordinates_.resize(cloud.size());
   resetSegments();
   insertPoints(cloud);
+  getLines();
   assignCluster(&labels);
   std::cout << "Segmentation done.\n";
   return labels;
 }
-
-void GroundSegmentation::lineFitThread(const unsigned int start_index,
-                                       const unsigned int end_index,
-                                       std::list<PointLine> *lines, std::mutex* lines_mutex) {
-  const bool visualize = lines;
-  const double seg_step = 2*M_PI / params_.n_segments;
-  double angle = -M_PI + seg_step/2 + seg_step * start_index;
-  for (unsigned int i = start_index; i < end_index; ++i) {
-    segments_[i].fitSegmentLines();
-    // Convert lines to 3d if we want to.
-    if (visualize) {
-      std::list<Segment::Line> segment_lines;
-      segments_[i].getLines(&segment_lines);
-      for (auto line_iter = segment_lines.begin(); line_iter != segment_lines.end(); ++line_iter) {
-        const Eigen::Vector3d start = minZPointTo3d(line_iter->first, angle);
-        const Eigen::Vector3d end = minZPointTo3d(line_iter->second, angle);
-        lines_mutex->lock();
-        lines->emplace_back(start, end);
-        lines_mutex->unlock();
-      }
-
-      angle += seg_step;
-    }
+void GroundSegmentation::getLines() {
+  std::vector<std::thread> thread_vec(params_.n_threads);
+  unsigned int i;
+  for (i = 0; i < params_.n_threads; ++i) {
+    const unsigned int start_index = params_.n_segments / params_.n_threads * i;
+    const unsigned int end_index = params_.n_segments / params_.n_threads * (i+1);
+    thread_vec[i] = std::thread(&GroundSegmentation::lineFitThread, this,
+                                start_index, end_index);
   }
+  for (auto it = thread_vec.begin(); it != thread_vec.end(); ++it) {
+    it->join();
+  }
+}
+void GroundSegmentation::lineFitThread(const unsigned int start_index,
+                                       const unsigned int end_index) {
+  for (unsigned int i = start_index; i < end_index; ++i) {
+      segments_[i].fitSegmentLines();
+    }
 }
 
 void GroundSegmentation::getMinZPointCloud(PointCloud* cloud) {
@@ -127,6 +122,7 @@ void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
     const int segment_index = bin_index_[i].first;
     if (segment_index >= 0) {
       double dist = segments_[segment_index].verticalDistanceToLine(point_2d.d, point_2d.z);
+      // std::cout << "dist: " << dist << std::endl;
       // Search neighboring segments.
       int steps = 1;
       while (dist < 0 && steps * segment_step < params_.line_search_angle) {
@@ -156,29 +152,6 @@ void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
   }
 }
 
-void GroundSegmentation::getMinZPoints(PointCloud* out_cloud) {
-  const double seg_step = 2*M_PI / params_.n_segments;
-  const double bin_step = (sqrt(params_.r_max_square) - sqrt(params_.r_min_square))
-      / params_.n_bins;
-  const double r_min = sqrt(params_.r_min_square);
-  double angle = -M_PI + seg_step/2;
-  for (auto seg_iter = segments_.begin(); seg_iter != segments_.end(); ++seg_iter) {
-    double dist = r_min + bin_step/2;
-    for (auto bin_iter = seg_iter->begin(); bin_iter != seg_iter->end(); ++bin_iter) {
-      Eigen::Vector3d point;
-      if (bin_iter->hasPoint()) {
-        Bin::MinZPoint min_z_point(bin_iter->getMinZPoint());
-        point.x() = cos(angle) * min_z_point.d;
-        point.y() = sin(angle) * min_z_point.d;
-        point.z() = min_z_point.z;
-
-        out_cloud->push_back(point);
-      }
-      dist += bin_step;
-    }
-    angle += seg_step;
-  }
-}
 
 void GroundSegmentation::insertPoints(const PointCloud& cloud) {
   std::vector<std::thread> threads(params_.n_threads);
@@ -213,6 +186,8 @@ void GroundSegmentation::insertionThread(const PointCloud& cloud,
     const double range_square = point.x() * point.x() + point.y() * point.y();
     const double range = sqrt(range_square);
     if (range_square < params_.r_max_square && range_square > params_.r_min_square) {
+      // std::cout << "range_square: " << range_square << std::endl;
+
       const double angle = std::atan2(point.y(), point.x());
       const unsigned int bin_index = (range - r_min) / bin_step;
       const unsigned int segment_index = (angle + M_PI) / segment_step;

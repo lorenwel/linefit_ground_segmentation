@@ -6,20 +6,20 @@
 
 struct GroundSegmentationParams {
   GroundSegmentationParams() :
-      r_min_square(0.3 * 0.3),
-      r_max_square(20*20),
-      n_bins(30),
-      n_segments(180),
-      max_dist_to_line(0.15),
+      r_min_square(0.5 * 0.5),
+      r_max_square(50 * 50),
+      n_bins(120),
+      n_segments(360),
+      max_dist_to_line(0.05),
       min_slope(0),
       max_slope(1),
       n_threads(4),
       max_error_square(0.01),
-      long_threshold(2.0),
+      long_threshold(1.0),
       max_long_height(0.1),
       max_start_height(0.2),
-      sensor_height(0.2),
-      line_search_angle(0.2) {}
+      sensor_height(1.68),
+      line_search_angle(0.33) {}
 
   // Minimum range of segmentation.
   double r_min_square;
@@ -80,10 +80,10 @@ class GroundSegmentation {
                        const size_t start_index,
                        const size_t end_index);
 
-  void getMinZPoints(PointCloud* out_cloud);
+  
+  void getLines();
 
-  void lineFitThread(const unsigned int start_index, const unsigned int end_index,
-                     std::list<PointLine> *lines, std::mutex* lines_mutex);
+  void lineFitThread(const unsigned int start_index, const unsigned int end_index);
 
   Eigen::Vector3d minZPointTo3d(const Bin::MinZPoint& min_z_point, const double& angle);
 
