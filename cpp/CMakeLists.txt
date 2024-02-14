@@ -13,8 +13,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
-find_package(Eigen3 REQUIRED)
+# find_package(Eigen3 REQUIRED)
 include(cmake/CompilerOptions.cmake)
+include(cmake/dependencies.cmake)
 add_library(gm_lib STATIC)
 
 target_sources(gm_lib PRIVATE linefit/segment.cpp linefit/ground_segmentation.cpp)

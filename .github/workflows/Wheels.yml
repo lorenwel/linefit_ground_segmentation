@@ -1,68 +1,68 @@
-name: Wheels
+# name: Wheels
 
-on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-     - master
-  release:
-    types:
-      - published
+# on:
+#   workflow_dispatch:
+#   pull_request:
+#   push:
+#     branches:
+#      - master
+#   release:
+#     types:
+#       - published
 
-jobs:
-  Build_Wheels:
-    name: Wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    if: github.event_name == 'release' && github.event.action == 'published'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+# jobs:
+#   Build_Wheels:
+#     name: Wheels on ${{ matrix.os }}
+#     runs-on: ${{ matrix.os }}
+#     if: github.event_name == 'release' && github.event.action == 'published'
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         os: [ubuntu-latest, macos-latest, windows-latest]
 
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
+#     steps:
+#     - uses: actions/checkout@v4
+#       with:
+#         submodules: true
 
-    - uses: pypa/cibuildwheel@v2.13.0
-      env:
-        # Cross-compile on macOS
-        CIBW_ARCHS_MACOS: x86_64 arm64
+#     - uses: pypa/cibuildwheel@v2.13.0
+#       env:
+#         # Cross-compile on macOS
+#         CIBW_ARCHS_MACOS: x86_64 arm64
 
-        # Temporary: use pre-release Python 3.12 for stable ABI builds
-        CIBW_PRERELEASE_PYTHONS: True
+#         # Temporary: use pre-release Python 3.12 for stable ABI builds
+#         CIBW_PRERELEASE_PYTHONS: True
 
-    - name: Verify clean directory
-      run: git diff --exit-code
-      shell: bash
+#     - name: Verify clean directory
+#       run: git diff --exit-code
+#       shell: bash
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v3
-      with:
-        path: wheelhouse/*.whl
+#     - name: Upload wheels
+#       uses: actions/upload-artifact@v3
+#       with:
+#         path: wheelhouse/*.whl
 
-  upload_all:
-    name: Upload if release
-    needs: [Build_Wheels]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
+#   upload_all:
+#     name: Upload if release
+#     needs: [Build_Wheels]
+#     runs-on: ubuntu-latest
+#     if: github.event_name == 'release' && github.event.action == 'published'
 
-    steps:
-    - uses: actions/setup-python@v4
+#     steps:
+#     - uses: actions/setup-python@v4
 
-    - name: Download Wheels artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-        path: wheelhouse
+#     - name: Download Wheels artifact
+#       uses: actions/download-artifact@v3
+#       with:
+#         name: artifact
+#         path: wheelhouse
 
-    # - uses: pypa/gh-action-pypi-publish@release/v1
-    #   with:
-    #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    #     repository-url: https://test.pypi.org/legacy/
+#     # - uses: pypa/gh-action-pypi-publish@release/v1
+#     #   with:
+#     #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+#     #     repository-url: https://test.pypi.org/legacy/
 
-    - uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
-        packages_dir: wheelhouse
+#     - uses: pypa/gh-action-pypi-publish@release/v1
+#       with:
+#         password: ${{ secrets.PYPI_API_TOKEN }}
+#         packages_dir: wheelhouse
