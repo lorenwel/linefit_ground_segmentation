@@ -1,11 +1,15 @@
-#include "ground_segmentation.h"
 
+// #include <toml.hpp>
 #include <chrono>
 #include <cmath>
 #include <list>
 #include <memory>
 #include <thread>
 #include <iostream>
+
+
+#include "ground_segmentation.h"
+
 
 using namespace std::chrono_literals;
 
@@ -23,17 +27,22 @@ using namespace std::chrono_literals;
   
 // }
 
-std::vector<bool> GroundSegmentation::segment(const PointCloud& cloud) {
-  
+std::vector<bool> GroundSegmentation::segment(const std::vector<std::vector<float>> points) {
+  // TODO: Maybe there is a better way to convert the points to Eigen::Vector3d
+  PointCloud cloud;
+  for (auto point : points) {
+    cloud.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
+  }
   std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";
-  std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+
   std::vector<bool> labels(cloud.size(), false);
   bin_index_.resize(cloud.size());
   segment_coordinates_.resize(cloud.size());
   resetSegments();
   insertPoints(cloud);
   assignCluster(&labels);
-
+  std::cout << "Segmentation done.\n";
+  return labels;
 }
 
 void GroundSegmentation::lineFitThread(const unsigned int start_index,

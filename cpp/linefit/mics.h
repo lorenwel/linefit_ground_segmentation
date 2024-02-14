@@ -1,6 +1,10 @@
 #pragma once
 #include <atomic>
 
+typedef std::vector<Eigen::Vector3d> PointCloud;
+typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> PointLine;
+
+
 class Bin {
 public:
   struct MinZPoint {

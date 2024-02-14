@@ -38,12 +38,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "../cpp/linefit/ground_segmentation.h"
+#include <Eigen/Core>
 #include "nanobind/nanobind.h"
-#include <nanobind/stl/string.h>
+// #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
-#include <nanobind/stl/array.h>
+#include <nanobind/ndarray.h>
+// #include <nanobind/stl/bind_vector.h>
 
+#include "../cpp/linefit/ground_segmentation.h"
+#include "../cpp/linefit/mics.h"
+// #include "stl_vector_eigen.h"
 
 namespace nb = nanobind;
 using namespace nb::literals;
@@ -51,5 +55,6 @@ using namespace nb::literals;
 NB_MODULE(linefit, m) {
     nb::class_<GroundSegmentation>(m, "ground_seg")
         .def(nb::init<>(), "linefit ground segmentation constructor, param: TODO")
-        .def("run", &GroundSegmentation::segment, "points"_a);
+        // .def("run", nb::overload_cast<std::vector<Eigen::Vector3d> &>(&GroundSegmentation::segment), "points"_a);
+        .def("run", &GroundSegmentation::segment, "points"_a, nanobind::rv_policy::reference);
 }

@@ -6,7 +6,7 @@
 #include <cmath>
 #include <Eigen/Core>
 
-#include "bin.h"
+#include "mics.h"
 
 class Segment {
 public:

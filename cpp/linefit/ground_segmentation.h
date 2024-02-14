@@ -2,7 +2,7 @@
 #include <mutex>
 
 #include "segment.h"
-#include "typedefs.h"
+#include "mics.h"
 
 struct GroundSegmentationParams {
   GroundSegmentationParams() :
@@ -95,8 +95,8 @@ public:
 
   GroundSegmentation(){};
   // GroundSegmentation(const GroundSegmentationParams& params = GroundSegmentationParams());
-  virtual ~GroundSegmentation() = default;
+  // virtual ~GroundSegmentation() = default;
 
-  std::vector<bool> segment(const PointCloud& cloud);
+  std::vector<bool> segment(const std::vector<std::vector<float>> points);
 
 };
