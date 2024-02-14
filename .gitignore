@@ -6,3 +6,5 @@ cpp/build/*
 .vscode/*
 
 *.pyc
+
+dist/*

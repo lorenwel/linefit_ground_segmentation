@@ -7,6 +7,10 @@ Author: C++ code from [Lorenz Wellhausen](https://github.com/lorenwel), nanobind
 
 Running on macOS, Windows and Linux, with Python Version >= 3.8.
 
+<a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" />  <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/mac%20os-000000?&logo=apple&logoColor=white" />
+
+<!-- <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/Windows-0078D6?st&logo=windows&logoColor=white" /> -->
+
 ## 0. Setup
 
 Choose one of the following options to install the package (recommended to use Option A `pip install linefit`):
@@ -17,7 +21,7 @@ Option B: Clone this repo and run following to build:
 ```bash
 cmake -B build && cmake --build build
 pip install .
-python3 -c 'import linefit; print(linefit.__version__)'
+python3 -c 'import linefit; print("success")'
 ```
 
 
@@ -80,6 +84,11 @@ The original methods are described in the following paper:
   organization={IEEE}
 }
 ```
+
+More python binding examples can be found in our other project:
+- [dufomap](https://github.com/KTH-RPL/dufomap): a dynamic awareness mapping framework. Remove dynamic points in a raw map.
+- [dztimer](https://github.com/KTH-RPL/dztimer): a breakout timer for python code.
+
 
 <!-- 
 This function is a part of our new paper, which is under review. If you use this python function, please try to cite our paper to support us:

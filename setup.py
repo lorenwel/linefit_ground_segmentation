@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='linefit',
-    version='0.1.0',
+    version='0.2.3',
     description='linefit ground segmentation algorithm Python bindings',
     author='Qingwen Zhang',
     author_email='qingwen@kth.se',
