@@ -1,4 +1,5 @@
-#include "ground_segmentation/segment.h"
+#include "segment.h"
+#include <unsupported/Eigen/MatrixFunctions>
 
 Segment::Segment(const unsigned int& n_bins,
                  const double& min_slope,

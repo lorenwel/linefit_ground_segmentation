@@ -1,15 +1,11 @@
-#ifndef GROUND_SEGMENTATION_H_
-#define GROUND_SEGMENTATION_H_
-
+#pragma once
 #include <mutex>
 
-#include "ground_segmentation/segment.h"
-#include "ground_segmentation/typedefs.h"
-#include "ground_segmentation/viewer.h"
+#include "segment.h"
+#include "typedefs.h"
 
 struct GroundSegmentationParams {
   GroundSegmentationParams() :
-      visualize(false),
       r_min_square(0.3 * 0.3),
       r_max_square(20*20),
       n_bins(30),
@@ -25,8 +21,6 @@ struct GroundSegmentationParams {
       sensor_height(0.2),
       line_search_angle(0.2) {}
 
-  // Visualize estimated ground.
-  bool visualize;
   // Minimum range of segmentation.
   double r_min_square;
   // Maximum range of segmentation.
@@ -57,9 +51,9 @@ struct GroundSegmentationParams {
   int n_threads;
 };
 
-typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+typedef std::vector<Eigen::Vector3d> PointCloud;
 
-typedef std::pair<pcl::PointXYZ, pcl::PointXYZ> PointLine;
+typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> PointLine;
 
 class GroundSegmentation {
 
@@ -74,14 +68,11 @@ class GroundSegmentation {
   // 2D coordinates (d, z) of every point in its respective segment.
   std::vector<Bin::MinZPoint> segment_coordinates_;
 
-  // Visualizer.
-  std::unique_ptr<Viewer> viewer_;
-
-  void assignCluster(std::vector<int>* segmentation);
+  void assignCluster(std::vector<bool>* segmentation);
 
   void assignClusterThread(const unsigned int& start_index,
                            const unsigned int& end_index,
-                           std::vector<int>* segmentation);
+                           std::vector<bool>* segmentation);
 
   void insertPoints(const PointCloud& cloud);
 
@@ -91,30 +82,21 @@ class GroundSegmentation {
 
   void getMinZPoints(PointCloud* out_cloud);
 
-  void getLines(std::list<PointLine>* lines);
-
   void lineFitThread(const unsigned int start_index, const unsigned int end_index,
                      std::list<PointLine> *lines, std::mutex* lines_mutex);
 
-  pcl::PointXYZ minZPointTo3d(const Bin::MinZPoint& min_z_point, const double& angle);
+  Eigen::Vector3d minZPointTo3d(const Bin::MinZPoint& min_z_point, const double& angle);
 
   void getMinZPointCloud(PointCloud* cloud);
 
   void resetSegments();
 
-  void visualizePointCloud(const PointCloud::ConstPtr& cloud,
-                           const std::string& id = "point_cloud");
-
-  void visualizeLines(const std::list<PointLine>& lines);
-
-  void visualize(const std::list<PointLine>& lines, const PointCloud::ConstPtr& cloud, const PointCloud::ConstPtr& ground_cloud, const PointCloud::ConstPtr& obstacle_cloud);
-
 public:
 
+  GroundSegmentation(){};
   GroundSegmentation(const GroundSegmentationParams& params = GroundSegmentationParams());
+  virtual ~GroundSegmentation() = default;
 
-  void segment(const PointCloud& cloud, std::vector<int>* segmentation);
+  std::vector<bool> segment(const PointCloud& cloud);
 
 };
-
-#endif // GROUND_SEGMENTATION_H_

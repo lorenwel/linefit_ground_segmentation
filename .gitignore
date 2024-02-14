@@ -1,1 +1,6 @@
 *.user
+
+build/*
+cpp/build/*
+
+.vscode/*

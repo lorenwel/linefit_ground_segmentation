@@ -1,10 +1,12 @@
-#ifndef GROUND_SEGMENTATION_SEGMENT_H_
-#define GROUND_SEGMENTATION_SEGMENT_H_
+#pragma once
 
 #include <list>
 #include <map>
+#include <vector>
+#include <cmath>
+#include <Eigen/Core>
 
-#include "ground_segmentation/bin.h"
+#include "bin.h"
 
 class Segment {
 public:
@@ -65,5 +67,3 @@ public:
   bool getLines(std::list<Line>* lines);
 
 };
-
-#endif /* GROUND_SEGMENTATION_SEGMENT_H_ */
