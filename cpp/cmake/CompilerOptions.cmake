@@ -27,7 +27,7 @@ function(set_global_target_properties target)
     ${target}
     PRIVATE # MSVC
             $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/W4>
-            $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX>
+            # $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX> # Commented out to not treat warnings as errors
             # Clang/AppleClang
             $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-fcolor-diagnostics>
             # $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Werror>
