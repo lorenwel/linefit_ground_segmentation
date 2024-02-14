@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest] # windows-latest, macos-latest, 
+        platform: [windows-latest, macos-latest] # ubuntu-latest
         python-version: ["3.8", "3.10"]
 
     steps:
