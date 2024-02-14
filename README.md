@@ -1,38 +1,24 @@
-# linefit_ground_segmentation
+linefit
+---
 
-Implementation of the ground segmentation algorithm proposed in 
+linefit is a ground segmentation algorithm for 3D point clouds. This repo we setup a python binding for the original C++ code and push to pypi for easy installation through `pip install linefit`.
+
+Author: C++ code from [Lorenz Wellhausen](https://github.com/lorenwel), nanobind by [Qingwen Zhang](https://kin-zhang.github.io/).
+
+Running on macOS, Windows and Linux, with Python Version >= 3.8.
+
+## 0. Setup
+
+Option A: Install from pypi `pip install linefit`
+
+Option B: Clone this repo and run `python setup.py install`
+
+## 1. Run the example
+
+After 
+```python
+
 ```
-@inproceedings{himmelsbach2010fast,
-  title={Fast segmentation of 3d point clouds for ground vehicles},
-  author={Himmelsbach, Michael and Hundelshausen, Felix V and Wuensche, H-J},
-  booktitle={Intelligent Vehicles Symposium (IV), 2010 IEEE},
-  pages={560--565},
-  year={2010},
-  organization={IEEE}
-}
-```
-The `linefit_ground_segmentation` package contains the ground segmentation library.
-A ROS interface is available in `linefit_ground_segmentation_ros` 
-
-The library can be compiled separately from the ROS interface if you're not using ROS.
-
-## Installation
-
-Requires the following dependencies to be installed:
-
-- *eigen_conversions* `sudo apt install ros-noetic-eigen-conversions`
-
-Compile using your favorite catkin build tool (e.g. `catkin build linefit_ground_segmentation_ros`)
-
-## Launch instructions
-
-The ground segmentation ROS node can be launch by executing `roslaunch linefit_ground_segmentation_ros segmentation.launch`.
-Input and output topic names can be specified in the same file.
-
-Getting up and running with your own point cloud source should be as simple as:
-
-1. Change the `input_topic` parameter in `segmentation.launch` to your topic.
-2. Adjust the `sensor_height` parameter in `segmentation_params.yaml` to the height where the sensor is mounted on your robot (e.g. KITTI Velodyne: 1.8m)
 
 ## Parameter description
 
@@ -67,3 +53,25 @@ The default parameters should work on the KITTI dataset.
 - **n_threads**  Number of threads to use.
 - **latch**  Latch output point clouds in ROS node. 
 - **visualize** Visualize the segmentation result. **ONLY FOR DEBUGGING.** Do not set true during online operation.
+
+## Acknowledgement & Citation
+
+The original C++ code is from [the repo we forked: lorenwel/linefit_ground_segmentation](https://github.com/lorenwel/linefit_ground_segmentation).
+
+The original methods are described in the following paper:
+```
+@inproceedings{himmelsbach2010fast,
+  title={Fast segmentation of 3d point clouds for ground vehicles},
+  author={Himmelsbach, Michael and Hundelshausen, Felix V and Wuensche, H-J},
+  booktitle={Intelligent Vehicles Symposium (IV), 2010 IEEE},
+  pages={560--565},
+  year={2010},
+  organization={IEEE}
+}
+```
+
+<!-- 
+This function is a part of our new paper, which is under review. If you use this python function, please try to cite our paper to support us:
+```
+TODO
+``` -->
