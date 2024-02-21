@@ -60,6 +60,7 @@ typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> PointLine;
 
 class GroundSegmentation {
 
+  bool verbose_ = false;
   GroundSegmentationParams params_;
 
   // Access with segments_[segment][bin].

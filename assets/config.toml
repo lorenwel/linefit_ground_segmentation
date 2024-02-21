@@ -33,3 +33,4 @@ line_search_angle = 0.33      # How far to search for a line in angular directio
 
 [general]
 n_threads = 8        # number of threads for parallel processing.
+verbose = true       # if you don't want to see every output, set this to false.

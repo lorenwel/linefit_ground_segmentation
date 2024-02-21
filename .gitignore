@@ -8,3 +8,5 @@ cpp/build/*
 *.pyc
 
 dist/*
+
+test.py
