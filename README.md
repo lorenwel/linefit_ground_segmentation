@@ -7,9 +7,9 @@ Author: C++ code from [Lorenz Wellhausen](https://github.com/lorenwel), nanobind
 
 Running on macOS, Windows and Linux, with Python Version >= 3.8.
 
-<a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" />  <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/mac%20os-000000?&logo=apple&logoColor=white" />
+Available in: <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/Windows-0078D6?st&logo=windows&logoColor=white" /> <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" />  <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/mac%20os-000000?&logo=apple&logoColor=white" /> </a>
 
-<!-- <a href="https://github.com/Kin-Zhang/linefit"><img src="https://img.shields.io/badge/Windows-0078D6?st&logo=windows&logoColor=white" /> -->
+<!--  -->
 
 ## 0. Setup
 
