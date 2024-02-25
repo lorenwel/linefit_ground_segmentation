@@ -51,7 +51,8 @@ GroundSegmentation::GroundSegmentation(const std::string &toml_file) {
   // general
   unsigned int num_thread = read(config["general"]["n_threads"], 8);
   params_.n_threads = std::min(num_thread, std::thread::hardware_concurrency()-1);
-
+  verbose_ = read(config["general"]["verbose"], false);
+  
   std::cout << "Parameters loaded.\n";
   std::cout << "\tSensor height: " << params_.sensor_height << std::endl;
   std::cout << "\tmin_slope: " << params_.min_slope << std::endl;
@@ -68,7 +69,8 @@ std::vector<bool> GroundSegmentation::segment(const std::vector<std::vector<floa
   for (auto point : points) {
     cloud.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
   }
-  std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";
+  if (verbose_)
+    std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";
 
   std::vector<bool> labels(cloud.size(), false);
   bin_index_.resize(cloud.size());
@@ -77,7 +79,8 @@ std::vector<bool> GroundSegmentation::segment(const std::vector<std::vector<floa
   insertPoints(cloud);
   getLines();
   assignCluster(&labels);
-  std::cout << "Segmentation done.\n";
+  if (verbose_)
+    std::cout << "Segmentation done.\n";
   return labels;
 }
 void GroundSegmentation::getLines() {

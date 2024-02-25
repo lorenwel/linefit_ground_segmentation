@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "linefit"
-version = "0.2.3"
+version = "0.2.4"
 description = "linefit ground segmentation algorithm Python bindings"
 readme = "README.md"
 requires-python = ">=3.8"

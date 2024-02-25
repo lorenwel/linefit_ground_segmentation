@@ -18,14 +18,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest] # , windows-2022
+        os: [macos-latest, ubuntu-latest, windows-latest] # , windows-2022
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: pypa/cibuildwheel@v2.13.0
+    - uses: pypa/cibuildwheel@v2.16.5
       env:
         # Cross-compile on macOS
         CIBW_ARCHS_MACOS: x86_64 arm64
