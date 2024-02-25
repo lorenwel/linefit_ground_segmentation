@@ -1,0 +1,31 @@
+
+[important]
+height = 1.78        # sensor height. 雷达传感器高度，主要是+offset
+
+# 整个雷点点云以自己为中心 分为多少个segment，每个segment又分成多少个bin
+[segments]
+r_min = 0.1          # minimum point distance. 感兴趣的区域
+r_max = 80           # maximum point distance.
+n_segments = 360     # number of radial segments.
+n_bins = 160         # number of radial bins.
+
+
+[ground]
+# 直线的 slope 斜率，一个seg里拟合的线斜率
+min_slope = -0.1      # minimum slope of a ground line. [T_m_small]
+max_slope = 0.1     # maximum slope of a ground line. [T_m]
+# 如果拟合点超过这个 long threshold，判断其 height 变化是否超过 max_long_height
+long_threshold = 2.0    # Distance at which points are considered far from each other. [T_d_prev]
+max_long_height = 0.2   # maximum height change to previous point in long line. [T_b]
+# 如果没有超过 long threshold，判断现在拟合的点与fitline高度变化是否超过 max_start_height
+max_start_height = 0.2  # Maximum heigh of starting line to be labelled ground.
+# 最大的拟合误差，超过这个误差的点不会被加入 line 拟合
+max_fit_error = 0.2  # maximum error of a point during line fit. [T_RMSE: will sqaure inside code.]
+
+# 判断是否是地面点的时候，需要满足的条件：
+max_dist_to_line = 0.2   # maximum vertical distance of point to line to be considered ground. [T_d_ground]
+line_search_angle = 0.33 # How far to search for a line in angular direction [rad].
+
+[general]
+n_threads = 8        # number of threads for parallel processing.
+verbose = true       # if you don't want to see every output, set this to false.
