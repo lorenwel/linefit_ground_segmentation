@@ -2,10 +2,10 @@
 
 #include <limits>
 
-Bin::Bin() : min_z(std::numeric_limits<double>::max()), has_point_(false) {}
+Bin::Bin() : has_point_(false), min_z(std::numeric_limits<double>::max()) {}
 
-Bin::Bin(const Bin& bin) : min_z(std::numeric_limits<double>::max()),
-                                           has_point_(false) {}
+Bin::Bin(const Bin& /* bin */) : has_point_(false),
+                                 min_z(std::numeric_limits<double>::max()) {}
 
 void Bin::addPoint(const pcl::PointXYZ& point) {
   const double d = sqrt(point.x * point.x + point.y * point.y);

@@ -1,52 +1,63 @@
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <pcl/io/ply_io.h>
-#include <pcl_ros/point_cloud.h>
 
 #include "ground_segmentation/ground_segmentation.h"
 
-int main(int argc, char** argv) {
-  ros::init(argc, argv, "ground_segmentation");
+class SegmentationTestNode : public rclcpp::Node {
+public:
+  explicit SegmentationTestNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions()) :
+      SegmentationTestNode("ground_segmentation", "", options) {
+  }
 
-  ros::NodeHandle nh("~");
-
-  std::string cloud_file;
-  if (nh.getParam("point_cloud_file", cloud_file)) {
-    std::cout << "Point cloud file is \"" << cloud_file << "\"\n";
+  explicit SegmentationTestNode(const std::string& node_name, const std::string& namespace_,
+                                const rclcpp::NodeOptions& options = rclcpp::NodeOptions()) :
+      Node(node_name, namespace_, options) {
     pcl::PointCloud<pcl::PointXYZ> cloud;
-    pcl::io::loadPLYFile(cloud_file, cloud);
+    try {
+      const auto cloud_file = declare_parameter<std::string>("point_cloud_file");
+      pcl::io::loadPLYFile(cloud_file, cloud);
+    } catch (const rclcpp::exceptions::UninitializedStaticallyTypedParameterException& e) {
+      RCLCPP_ERROR(get_logger(), "No point cloud file given");
+      rclcpp::shutdown();
+      return;
+    }
 
     GroundSegmentationParams params;
-    nh.param("visualize", params.visualize, params.visualize);
-    nh.param("n_bins", params.n_bins, params.n_bins);
-    nh.param("n_segments", params.n_segments, params.n_segments);
-    nh.param("max_dist_to_line", params.max_dist_to_line, params.max_dist_to_line);
-    nh.param("max_slope", params.max_slope, params.max_slope);
-    nh.param("long_threshold", params.long_threshold, params.long_threshold);
-    nh.param("max_long_height", params.max_long_height, params.max_long_height);
-    nh.param("max_start_height", params.max_start_height, params.max_start_height);
-    nh.param("sensor_height", params.sensor_height, params.sensor_height);
-    nh.param("line_search_angle", params.line_search_angle, params.line_search_angle);
-    nh.param("n_threads", params.n_threads, params.n_threads);
+
+    params.visualize = declare_parameter<bool>("visualize", params.visualize);
+    params.n_bins = declare_parameter<int>("n_bins", params.n_bins);
+    params.n_segments = declare_parameter<int>("n_segments", params.n_segments);
+    params.max_dist_to_line = declare_parameter<double>("max_dist_to_line", params.max_dist_to_line);
+    params.max_slope = declare_parameter<double>("max_slope", params.max_slope);
+    params.min_slope = declare_parameter<double>("min_slope", params.min_slope);
+    params.long_threshold = declare_parameter<double>("long_threshold", params.long_threshold);
+    params.max_long_height = declare_parameter<double>("max_long_height", params.max_long_height);
+    params.max_start_height = declare_parameter<double>("max_start_height", params.max_start_height);
+    params.sensor_height = declare_parameter<double>("sensor_height", params.sensor_height);
+    params.line_search_angle = declare_parameter<double>("line_search_angle", params.line_search_angle);
+    params.n_threads = declare_parameter<int>("n_threads", params.n_threads);
+    params.debug = declare_parameter<bool>("debug", params.debug);
+
     // Params that need to be squared.
-    double r_min, r_max, max_fit_error;
-    if (nh.getParam("r_min", r_min)) {
-      params.r_min_square = r_min*r_min;
-    }
-    if (nh.getParam("r_max", r_max)) {
-      params.r_max_square = r_max*r_max;
-    }
-    if (nh.getParam("max_fit_error", max_fit_error)) {
-      params.max_error_square = max_fit_error * max_fit_error;
-    }
+    const auto r_min = declare_parameter<double>("r_min", std::sqrt(params.r_min_square));
+    const auto r_max = declare_parameter<double>("r_max", std::sqrt(params.r_max_square));
+    const auto max_fit_error = declare_parameter<double>("max_fit_error", std::sqrt(params.max_error_square));
+    params.r_min_square = r_min * r_min;
+    params.r_max_square = r_max * r_max;
+    params.max_error_square = max_fit_error * max_fit_error;
 
     GroundSegmentation segmenter(params);
     std::vector<int> labels;
 
+    std::setvbuf(stdout, NULL, _IONBF, BUFSIZ); // Disable stdout buffering
     segmenter.segment(cloud, &labels);
+  }
+};
 
-    ros::spin();
-  }
-  else {
-    std::cerr << "No point cloud file given\n";
-  }
+int main(int argc, char** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<SegmentationTestNode>());
+  rclcpp::shutdown();
+  return 0;
 }

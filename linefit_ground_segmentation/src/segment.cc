@@ -8,14 +8,14 @@ Segment::Segment(const unsigned int& n_bins,
                  const double& max_long_height,
                  const double& max_start_height,
                  const double& sensor_height) :
-                 bins_(n_bins),
                  min_slope_(min_slope),
                  max_slope_(max_slope),
                  max_error_(max_error),
                  long_threshold_(long_threshold),
                  max_long_height_(max_long_height),
                  max_start_height_(max_start_height),
-                 sensor_height_(sensor_height){}
+                 sensor_height_(sensor_height),
+                 bins_(n_bins) {}
 
 void Segment::fitSegmentLines() {
   // Find first point.
@@ -47,7 +47,7 @@ void Segment::fitSegmentLines() {
         if (error > max_error_ ||
             std::fabs(cur_line.first) > max_slope_ ||
             (current_line_points.size() > 2 && std::fabs(cur_line.first) < min_slope_) ||
-            is_long_line && std::fabs(expected_z - cur_point.z) > max_long_height_) {
+            (is_long_line && std::fabs(expected_z - cur_point.z) > max_long_height_)) {
           // Add line until previous point as ground.
           current_line_points.pop_back();
           // Don't let lines with 2 base points through.

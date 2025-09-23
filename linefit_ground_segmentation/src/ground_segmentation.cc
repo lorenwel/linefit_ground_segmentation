@@ -23,7 +23,9 @@ GroundSegmentation::GroundSegmentation(const GroundSegmentationParams& params) :
 }
 
 void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segmentation) {
-  std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";
+  if (params_.debug) {
+    std::cout << "Segmenting cloud with " << cloud.size() << " points...\n";
+  }
   std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
   segmentation->clear();
   segmentation->resize(cloud.size(), 0);
@@ -48,22 +50,24 @@ void GroundSegmentation::segment(const PointCloud& cloud, std::vector<int>* segm
 
   if (params_.visualize) {
     // Visualize.
-    PointCloud::Ptr obstacle_cloud = boost::make_shared<PointCloud>();
+    PointCloud::Ptr obstacle_cloud = std::make_shared<PointCloud>();
     obstacle_cloud->reserve(segmentation->size() - n_ground);
     // Get cloud of ground points.
-    PointCloud::Ptr ground_cloud = boost::make_shared<PointCloud>();
+    PointCloud::Ptr ground_cloud = std::make_shared<PointCloud>();
     ground_cloud->reserve(n_ground);
     for (size_t i = 0; i < cloud.size(); ++i) {
       if (segmentation->at(i) == 1) ground_cloud->push_back(cloud[i]);
       else obstacle_cloud->push_back(cloud[i]);
     }
-    PointCloud::Ptr min_cloud = boost::make_shared<PointCloud>();
+    PointCloud::Ptr min_cloud = std::make_shared<PointCloud>();
     getMinZPointCloud(min_cloud.get());
     viewer_->visualize(lines, min_cloud, ground_cloud, obstacle_cloud);
   }
   std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::milli> fp_ms = end - start;
-  std::cout << "Done! Took " << fp_ms.count() << "ms\n";
+  if (params_.debug) {
+    std::cout << "Done! Took " << fp_ms.count() << "ms\n";
+  }
 }
 
 void GroundSegmentation::getLines(std::list<PointLine> *lines) {
@@ -168,7 +172,7 @@ void GroundSegmentation::assignClusterThread(const unsigned int &start_index,
       while (dist < 0 && steps * segment_step < params_.line_search_angle) {
         // Fix indices that are out of bounds.
         int index_1 = segment_index + steps;
-        while (index_1 >= params_.n_segments) index_1 -= params_.n_segments;
+        while (index_1 >= static_cast<int>(params_.n_segments)) index_1 -= params_.n_segments;
         int index_2 = segment_index - steps;
         while (index_2 < 0) index_2 += params_.n_segments;
         // Get distance to neighboring lines.

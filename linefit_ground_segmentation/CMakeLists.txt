@@ -1,29 +1,25 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(linefit_ground_segmentation)
 
-find_package(catkin_simple 0.1.0 REQUIRED )
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-catkin_simple(ALL_DEPS_REQUIRED)
-
-add_definitions(-std=c++14)
-
-find_package(PCL REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
+find_package(ament_cmake_auto REQUIRED)
 find_package(Eigen3 REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS})
+find_package(PCL REQUIRED)
 
-cs_add_library(${PROJECT_NAME} src/ground_segmentation.cc src/segment.cc src/bin.cc src/viewer.cc)
+ament_auto_find_build_dependencies()
 
-#add_doxygen(NOT_AUTOMATIC)
+ament_auto_add_library(${PROJECT_NAME} SHARED
+  DIRECTORY src
+)
+ament_target_dependencies(${PROJECT_NAME}
+  Eigen3
+  PCL
+)
+target_link_libraries(${PROJECT_NAME}
+  ${PCL_LIBRARIES} # it fails to find vtk without this
+)
 
-cs_install()
-cs_export()
-
-#############
-# QTCREATOR #
-#############
-FILE(GLOB_RECURSE LibFiles "include/*")
-add_custom_target(headers SOURCES ${LibFiles})
+ament_auto_package()

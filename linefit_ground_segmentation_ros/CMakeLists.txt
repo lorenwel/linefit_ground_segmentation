@@ -1,29 +1,35 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(linefit_ground_segmentation_ros)
 
-find_package(catkin_simple 0.1.0 REQUIRED )
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-catkin_simple(ALL_DEPS_REQUIRED)
-
-add_definitions(-std=c++14)
-
+find_package(ament_cmake_auto REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(PCL REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
 
-add_executable(ground_segmentation_node src/ground_segmentation_node.cc)
-add_executable(ground_segmentation_test_node src/ground_segmentation_test_node.cc)
-target_link_libraries(ground_segmentation_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
-target_link_libraries(ground_segmentation_test_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+ament_auto_find_build_dependencies()
 
-#add_doxygen(NOT_AUTOMATIC)
+ament_auto_add_library(${PROJECT_NAME} SHARED
+  src/ground_segmentation_node.cc
+)
+ament_target_dependencies(${PROJECT_NAME}
+  Eigen3
+  PCL
+)
 
-cs_install()
-cs_export()
+ament_auto_add_executable(ground_segmentation_test_node
+  src/ground_segmentation_test_node.cc
+)
 
-#############
-# QTCREATOR #
-#############
-FILE(GLOB_RECURSE LibFiles "include/*")
-add_custom_target(headers SOURCES ${LibFiles})
+rclcpp_components_register_node(${PROJECT_NAME}
+  PLUGIN "SegmentationNode"
+  EXECUTABLE ground_segmentation_node
+)
+
+ament_auto_package(
+  INSTALL_TO_SHARE
+    ../doc
+    launch
+)
